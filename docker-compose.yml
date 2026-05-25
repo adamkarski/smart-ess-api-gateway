@@ -2,9 +2,11 @@ version: "3.9"
 
 services:
   app:
+    build: .
     image: antoxa1081/smart-ess-api-gateway
     restart: unless-stopped
     ports:
       - "8000:3000"
     volumes:
       - ./.env:/src/app/.env
+      - ./public:/src/app/public

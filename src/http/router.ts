@@ -18,6 +18,10 @@ import {
 } from '../actions/auth-service';
 import { register } from '../metrics/prom';
 import { controllerGetData } from './controllers/query-data.controller';
+import { transferUriStr } from '../lib/utils';
+import { automationController } from './controllers/automation.controller';
+
+automationController(server);
 
 server.get('/auth', async function handler(request, reply) {
   const auth =
@@ -51,21 +55,40 @@ server.get('/settings', async function handler(request, reply) {
     devcode: request.query['devcode'],
     devaddr: request.query['devaddr'],
   });
-  const settings = await Promise.all(
-    Object.values(QUERY_DEVICE_CONTROL_ID).map((id) =>
-      dess.queryDeviceCtrlValue(auth, id, target),
-    ),
-  );
-  const payload: ResponseDessHttpSettings = {
-    settings,
-  };
+  
+  // 1. Try fetching via known IDs
+  const idsToTry = [
+    'bse_output_source_priority_read', 'los_output_source_priority', 'bse_output_source_priority',
+    'bat_max_charging_current_read', 'bat_max_charging_current',
+    'bat_ac_charging_current_read', 'bat_max_utility_charge_current', 'bat_ac_charging_current',
+    'bat_charger_source_priority_read', 'bat_charger_source_priority'
+  ];
 
-  reply.send(payload);
+  const settingsPromises = idsToTry.map(async (id) => {
+    try {
+      return await dess.queryDeviceCtrlValue(auth, id as any, target);
+    } catch (e) { return null; }
+  });
+
+  const results = (await Promise.all(settingsPromises)).filter(s => s !== null && !((s as any).err));
+  
+  // 2. Always include data from /data as fallback
+  const deviceData = await controllerGetData(request.query as any);
+  
+  reply.send({ 
+    settings: results,
+    fallbackData: deviceData.querySPDeviceLastData.pars,
+    devicePars: deviceData.queryDeviceParsEs.dat.parameter
+  });
+});
+
+server.get('/settings-refresh', async function handler(request, reply) {
+  // Just a proxy to the robust /settings for this device
+  return reply.redirect('/settings?' + transferUriStr(request.query as any));
 });
 
 server.get('/settings-set', async function handler(request, reply) {
   const auth = formatAuthData(await authRenewCheck());
-  console.log(request.query);
   const target: TargetOptions = resolveTargetOptions({
     pn: request.query['pn'],
     sn: request.query['sn'],
@@ -74,8 +97,8 @@ server.get('/settings-set', async function handler(request, reply) {
   });
   const payload = await setDeviceParsEs(
     auth,
-    request.query['id'],
-    request.query['value'],
+    request.query['id'] as any,
+    request.query['value'] as any,
     target,
   );
   reply.send(payload);
