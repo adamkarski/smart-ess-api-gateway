@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+/* LCD digital font for numeric readouts */
+@import url('https://fonts.cdnfonts.com/css/lcd');
+@font-face {
+  font-family: 'LCD ITC Local';
+  src: url('/LCD ITC Normal.ttf') format('truetype');
+}
+
+/* ===== GLOBAL STYLES ===== */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  background-color: #020617;
+  color: #e2e8f0;
+  scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+}
+
+/* LCD font for numeric values */
+.lcd-text {
+  font-family: 'LCD', 'LCD ITC Local', 'LCD ITC', 'SF Mono', 'Menlo', 'Consolas', monospace !important;
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Unit text next to LCD values */
+.unit-text {
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 0.6em;
+  margin-left: 2px;
+  color: #64748b;
+  vertical-align: baseline;
+}
+
+/* Progress rings */
+.circle-progress {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+.progress-ring__circle {
+  transition: stroke-dashoffset 1s ease-in-out;
+}
+
+/* Charge/discharge glow */
+@keyframes pulse-glow-green {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); }
+  50% { box-shadow: 0 0 20px 2px rgba(16, 185, 129, 0.1); }
+}
+@keyframes pulse-glow-orange {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249, 168, 38, 0.2); }
+  50% { box-shadow: 0 0 20px 2px rgba(249, 168, 38, 0.1); }
+}
+.charge-glow { animation: pulse-glow-green 2s infinite; border-color: rgba(16, 185, 129, 0.5) !important; }
+.discharge-glow { animation: pulse-glow-orange 2s infinite; border-color: rgba(249, 168, 38, 0.5) !important; }
+
+/* Tab transitions */
+.tab-content {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.tab-content.hidden {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+}
+@keyframes tab-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-tab-entry {
+  animation: tab-enter 0.4s ease-out forwards;
+}
+
+/* Glass effect */
+.glass {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(30, 41, 59, 0.7);
+}
+
+/* Mobile: neumorphism dark theme */
+@media screen and (max-width: 768px) {
+  body {
+    background: #2a2d35;
+    padding-bottom: 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+}

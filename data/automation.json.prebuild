@@ -1,0 +1,449 @@
+{
+  "nodes": {
+    "action-mpualkd6": {
+      "id": "action-mpualkd6",
+      "type": "action",
+      "name": "powyżej 60% Magazynu? ",
+      "config": {},
+      "data": {
+        "log": "FALSE"
+      },
+      "x": 227,
+      "y": 480,
+      "lastVal": "FALSE",
+      "_z": 695
+    },
+    "inverter-mpwqhfdp": {
+      "id": "inverter-mpwqhfdp",
+      "type": "inverter",
+      "name": "Inwerter",
+      "config": {
+        "par": "battery_soc",
+        "op": "gt",
+        "threshold": "75"
+      },
+      "data": {
+        "solar_pv_power": "0",
+        "battery_real_level": "NaN",
+        "load_active_power": "0.2910",
+        "bt_battery_capacity": "26.0000",
+        "battery_active_power": "-0.2920",
+        "pv_output_power": "0",
+        "grid_active_power": "0.0000",
+        "gd_eybond_read_15": "0.0",
+        "gd_eybond_read_16": "0.00",
+        "gd_grid_active_power": "0",
+        "gd_eybond_read_45": "0.0",
+        "sy_eybond_read_14": "Off-Grid Mode",
+        "sy_eybond_read_38": "23",
+        "sy_eybond_read_39": "27",
+        "sy_eybond_read_49": "SBU",
+        "sy_eybond_read_75": "PV priority",
+        "pv_eybond_read_32": "22.3",
+        "pv_eybond_read_33": "0.0",
+        "pv_eybond_read_46": "0.0",
+        "bt_eybond_read_28": "52.3",
+        "bt_eybond_read_29": "-5.6",
+        "bc_eybond_read_23": "230.0",
+        "bc_eybond_read_24": "1.4",
+        "bc_eybond_read_25": "50.00",
+        "bc_load_active_power": "291",
+        "bc_eybond_read_27": "322",
+        "bc_eybond_read_37": "5",
+        "battery_soc": 26,
+        "labels": {
+          "gd_eybond_read_15": "Grid Voltage",
+          "gd_eybond_read_16": "Grid Frequency",
+          "gd_grid_active_power": "Grid Power",
+          "gd_eybond_read_45": "AC charging current",
+          "sy_eybond_read_14": "Operating mode",
+          "sy_eybond_read_38": "DC Module Termperature",
+          "sy_eybond_read_39": "INV Module Termperature",
+          "sy_eybond_read_49": "Output priority",
+          "sy_eybond_read_75": "Charger Source Priority",
+          "pv_eybond_read_32": "PV Voltage",
+          "pv_eybond_read_33": "PV Current",
+          "pv_output_power": "PV Power",
+          "pv_eybond_read_46": "PV charging current",
+          "bt_eybond_read_28": "Battery Voltage",
+          "bt_eybond_read_29": "Battery Current",
+          "bc_eybond_read_23": "Output Voltage",
+          "bc_eybond_read_24": "Output Current",
+          "bc_eybond_read_25": "Output frequency",
+          "bc_load_active_power": "Output Active Power",
+          "bc_eybond_read_27": "Output Apparent Power",
+          "bc_eybond_read_37": "Load Percent"
+        }
+      },
+      "x": 23,
+      "y": 417,
+      "lastVal": "26 -> FALSE",
+      "lastUpdate": 1780794566166,
+      "_z": 700
+    },
+    "action-mpwr64v5": {
+      "id": "action-mpwr64v5",
+      "type": "action",
+      "name": "CWU włączone?",
+      "config": {},
+      "data": {
+        "log": "UNDEFINED"
+      },
+      "x": 635,
+      "y": 483,
+      "lastVal": "UNDEFINED",
+      "_z": 699
+    },
+    "else-mpww7wso": {
+      "id": "else-mpww7wso",
+      "type": "else",
+      "name": "Else",
+      "config": {
+        "enabled": true
+      },
+      "data": {},
+      "x": 634,
+      "y": 369,
+      "lastVal": "TRUE",
+      "_z": 698
+    },
+    "inverter-mpy331ct": {
+      "id": "inverter-mpy331ct",
+      "type": "inverter",
+      "name": "Inwerter",
+      "config": {
+        "par": "battery_soc",
+        "op": "lt",
+        "threshold": "20"
+      },
+      "data": {
+        "solar_pv_power": "0",
+        "battery_real_level": "NaN",
+        "load_active_power": "0.2910",
+        "bt_battery_capacity": "26.0000",
+        "battery_active_power": "-0.2920",
+        "pv_output_power": "0",
+        "grid_active_power": "0.0000",
+        "gd_eybond_read_15": "0.0",
+        "gd_eybond_read_16": "0.00",
+        "gd_grid_active_power": "0",
+        "gd_eybond_read_45": "0.0",
+        "sy_eybond_read_14": "Off-Grid Mode",
+        "sy_eybond_read_38": "23",
+        "sy_eybond_read_39": "27",
+        "sy_eybond_read_49": "SBU",
+        "sy_eybond_read_75": "PV priority",
+        "pv_eybond_read_32": "22.3",
+        "pv_eybond_read_33": "0.0",
+        "pv_eybond_read_46": "0.0",
+        "bt_eybond_read_28": "52.3",
+        "bt_eybond_read_29": "-5.6",
+        "bc_eybond_read_23": "230.0",
+        "bc_eybond_read_24": "1.4",
+        "bc_eybond_read_25": "50.00",
+        "bc_load_active_power": "291",
+        "bc_eybond_read_27": "322",
+        "bc_eybond_read_37": "5",
+        "battery_soc": 26,
+        "labels": {
+          "gd_eybond_read_15": "Grid Voltage",
+          "gd_eybond_read_16": "Grid Frequency",
+          "gd_grid_active_power": "Grid Power",
+          "gd_eybond_read_45": "AC charging current",
+          "sy_eybond_read_14": "Operating mode",
+          "sy_eybond_read_38": "DC Module Termperature",
+          "sy_eybond_read_39": "INV Module Termperature",
+          "sy_eybond_read_49": "Output priority",
+          "sy_eybond_read_75": "Charger Source Priority",
+          "pv_eybond_read_32": "PV Voltage",
+          "pv_eybond_read_33": "PV Current",
+          "pv_output_power": "PV Power",
+          "pv_eybond_read_46": "PV charging current",
+          "bt_eybond_read_28": "Battery Voltage",
+          "bt_eybond_read_29": "Battery Current",
+          "bc_eybond_read_23": "Output Voltage",
+          "bc_eybond_read_24": "Output Current",
+          "bc_eybond_read_25": "Output frequency",
+          "bc_load_active_power": "Output Active Power",
+          "bc_eybond_read_27": "Output Apparent Power",
+          "bc_eybond_read_37": "Load Percent"
+        }
+      },
+      "x": 61,
+      "y": 36,
+      "lastVal": "26 -> FALSE",
+      "lastUpdate": 1780794566166,
+      "_z": 601
+    },
+    "tuya-mpy3dli3": {
+      "id": "tuya-mpy3dli3",
+      "type": "tuya",
+      "name": "TAURON",
+      "config": {
+        "device_id": "tuya-bfd64877-mpszsbav",
+        "dps_control": "1",
+        "input_source": "node",
+        "action_type": "turn_on",
+        "action_value": "true",
+        "par": "",
+        "op": "none",
+        "threshold": "0"
+      },
+      "data": {
+        "dps": {
+          "1": false,
+          "9": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "20": 2413,
+          "21": 2,
+          "22": 0,
+          "23": 0,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "38": "off",
+          "40": "relay",
+          "41": false,
+          "42": "",
+          "47": 26,
+          "66": "online"
+        },
+        "dps_translated": {
+          "1": false,
+          "9": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "20": 2413,
+          "21": 2,
+          "22": 0,
+          "23": 0,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "38": "off",
+          "40": "relay",
+          "41": false,
+          "42": "",
+          "47": 26,
+          "66": "online"
+        },
+        "online": true,
+        "mapping": {},
+        "category": "dlq",
+        "product_id": "dmtrpqibupjoxiq4",
+        "ip": "192.168.8.19",
+        "lastSync": 1780794246122
+      },
+      "x": 485,
+      "y": 13,
+      "lastVal": "IN:false -> FALSE (OK)",
+      "_z": 703,
+      "lastUpdate": 1780794567596
+    },
+    "timer-mpy3fsna": {
+      "id": "timer-mpy3fsna",
+      "type": "timer",
+      "name": "Timer",
+      "config": {
+        "mode": "window",
+        "duration_minutes": 30,
+        "schedule_time": "15:00",
+        "trigger_on_input": true,
+        "loop": true,
+        "window_start": "15:00",
+        "window_end": "16:00",
+        "enabled": true
+      },
+      "data": {
+        "_configHash": "{\"mode\":\"window\",\"duration_minutes\":30,\"schedule_time\":\"15:00\",\"trigger_on_input\":true,\"loop\":true,\"window_start\":\"15:00\",\"window_end\":\"16:00\",\"enabled\":true}",
+        "_timerStart": null,
+        "_completed": false,
+        "_triggeredToday": false
+      },
+      "x": 274,
+      "y": 39,
+      "lastVal": "11:51:00",
+      "_z": 701
+    },
+    "tuya-mq2pmzkh": {
+      "id": "tuya-mq2pmzkh",
+      "type": "tuya",
+      "name": "Urządzenie Tuya",
+      "config": {
+        "device_id": "tuya-bfc53dee-mpszsbav",
+        "dps_control": "20",
+        "input_source": "device",
+        "action_type": "turn_on",
+        "action_value": "true",
+        "par": "External Temperature",
+        "op": "lt",
+        "threshold": "55",
+        "enabled": true
+      },
+      "data": {
+        "dps": {
+          "101": 214,
+          "102": 53,
+          "103": "middle",
+          "104": 0,
+          "105": 0,
+          "106": 580,
+          "107": 0
+        },
+        "dps_translated": {
+          "Temperature": 214,
+          "Humidity": 53,
+          "Battery State": "middle",
+          "Temp Calibration": 0,
+          "Hum Calibration": 0,
+          "External Temperature": 580,
+          "Temp Correction": 0
+        },
+        "online": true,
+        "product_id": "jc1afi7ow32okd0h",
+        "mapping": {},
+        "category": "tdq",
+        "ip": null,
+        "lastSync": 1780794246122,
+        "_lastSentTarget": false
+      },
+      "x": 412,
+      "y": 366,
+      "lastVal": "External Temperature -> FALSE (pending)",
+      "_z": 709,
+      "lastUpdate": 1780794569898
+    },
+    "merge-mq32hvwy": {
+      "id": "merge-mq32hvwy",
+      "type": "merge",
+      "name": "Sumator",
+      "config": {},
+      "data": {},
+      "x": 803,
+      "y": 81,
+      "lastVal": "WAITING...",
+      "_z": 706
+    }
+  },
+  "links": [
+    {
+      "id": "link-1780263263264",
+      "fromNode": "tuya-mpt0fj0t",
+      "toNode": "tuya-bf8beef7-mpszsbav"
+    },
+    {
+      "id": "link-1780263362229",
+      "fromNode": "weather-1",
+      "toNode": "tuya-bf8beef7-mpszsbav"
+    },
+    {
+      "id": "link-1780422453212",
+      "fromNode": "inverter-mpwqhfdp",
+      "toNode": "tuya-mpuaus58"
+    },
+    {
+      "id": "link-1780422459395",
+      "fromNode": "tuya-mpuaus58",
+      "toNode": "else-mpww7wso"
+    },
+    {
+      "id": "link-1780422464932",
+      "fromNode": "tuya-mpuaus58",
+      "toNode": "action-mpwr64v5"
+    },
+    {
+      "id": "link-1780422469099",
+      "fromNode": "inverter-mpwqhfdp",
+      "toNode": "action-mpualkd6"
+    },
+    {
+      "id": "link-1780493696421",
+      "fromNode": "inverter-mpy331ct",
+      "toNode": "timer-mpy3fsna"
+    },
+    {
+      "id": "link-1780793455656",
+      "fromNode": "inverter-mpwqhfdp",
+      "toNode": "tuya-mq2pmzkh"
+    },
+    {
+      "id": "link-1780793466864",
+      "fromNode": "tuya-mq2pmzkh",
+      "toNode": "else-mpww7wso"
+    },
+    {
+      "id": "link-1780793470414",
+      "fromNode": "tuya-mq2pmzkh",
+      "toNode": "action-mpwr64v5"
+    },
+    {
+      "id": "link-1780793518824",
+      "fromNode": "timer-mpy3fsna",
+      "toNode": "tuya-mpy3dli3"
+    }
+  ],
+  "settings": {
+    "weather": {
+      "apiKey": "5d652f0bff80d46c6a9ce422c48e4296",
+      "lat": "49.88087",
+      "lon": "19.56303"
+    },
+    "tuya": {
+      "apiKey": "xmdyfty4pwshcp4nwmtq",
+      "apiSecret": "2acf28fd1f474a1b932fc93f10ff30d0",
+      "region": "eu"
+    }
+  },
+  "tuya_devices": {
+    "tuya-bf1edb95-mpszsbav": {
+      "internal_app_id": "tuya-bf1edb95-mpszsbav",
+      "tuya_device_id": "bf1edb954ab9cd240ezcth",
+      "local_key": "esmufnYkW4MxAR<U",
+      "ip": null,
+      "name": "Motion Sensor",
+      "status": "offline",
+      "last_sync": 1780794246122,
+      "version": "3.4",
+      "category": "tdq",
+      "product_id": "gk0d4i8g5akryd9d"
+    },
+    "tuya-bfd64877-mpszsbav": {
+      "internal_app_id": "tuya-bfd64877-mpszsbav",
+      "tuya_device_id": "bfd64877960d2e26e7aqlj",
+      "local_key": "AZ@}+/b1?wmH~k;o",
+      "ip": "192.168.8.19",
+      "name": "TAURON",
+      "status": "online",
+      "last_sync": 1780794246122,
+      "version": "3.4",
+      "category": "dlq",
+      "product_id": "dmtrpqibupjoxiq4"
+    },
+    "tuya-bfc53dee-mpszsbav": {
+      "internal_app_id": "tuya-bfc53dee-mpszsbav",
+      "tuya_device_id": "bfc53dee2685cf9ca2or8v",
+      "local_key": "ixeX(izHji[(=OxY",
+      "ip": null,
+      "name": "CWU zbiornik",
+      "status": "online",
+      "last_sync": 1780794246122,
+      "category": "tdq",
+      "product_id": "jc1afi7ow32okd0h"
+    },
+    "tuya-bf8beef7-mpszsbav": {
+      "internal_app_id": "tuya-bf8beef7-mpszsbav",
+      "tuya_device_id": "bf8beef772cee0beb5aegc",
+      "local_key": "A[*?;T{y~0N#sZ+c",
+      "ip": "192.168.8.10",
+      "name": "CWU piwnica 2x",
+      "status": "online",
+      "last_sync": 1780794246122,
+      "version": "3.5",
+      "category": "tdq",
+      "product_id": "l0haolo9qa8rn8t0"
+    }
+  }
+}

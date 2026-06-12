@@ -1,13 +1,5 @@
-import {
-  authRenewCheck,
-  formatAuthData,
-  performAuth,
-} from '../../actions/auth-service';
-import {
-  queryDeviceList,
-  resolveTargetOptions,
-  TargetOptions,
-} from '../../lib/dess/dess';
+import { authRenewCheck, formatAuthData, performAuth } from '../../actions/auth-service';
+import { queryDeviceList, resolveTargetOptions, TargetOptions } from '../../lib/dess/dess';
 import * as dess from '../../lib/dess/dess';
 import { ParameterPrefix } from '../../lib/dess/dess-api.types';
 import { appConfig } from '../../config';
@@ -60,8 +52,32 @@ export async function controllerGetData(query: {
     }),
   ]);
 
-  const getParameter = (prefix: ParameterPrefix, parameter: string) =>
-    querySPDeviceLastData.pars[prefix]?.find((i) => i.id === parameter)?.val;
+  const getParameter = (prefix: ParameterPrefix, parameter: string) => {
+    const group = querySPDeviceLastData.pars[prefix];
+    if (!group) return undefined;
+    const item = group.find((i) => i.id === parameter);
+    if (item) return item.val;
+    
+    // Fallback: search by name/label
+    const labelMap: Record<string, string> = {
+      'bt_battery_voltage': 'Battery Voltage',
+      'bt_battery_status': 'Battery Status',
+      'bt_battery_charging_current': 'Battery Current',
+      'bt_battery_discharge_current': 'Battery Discharge Current',
+      'bt_charger_source_priority': 'Charger Source Priority',
+      'pv_input_voltage': 'PV Voltage',
+      'pv_output_power': 'PV Power',
+      'gd_ac_input_voltage': 'Grid Voltage',
+      'bc_output_source_priority': 'Output priority',
+      'bc_load_active_power': 'Output Active Power'
+    };
+    const label = labelMap[parameter];
+    if (label) {
+      const byLabel = group.find((i) => i.par === label);
+      if (byLabel) return byLabel.val;
+    }
+    return undefined;
+  };
 
   const inverterDataRatedBatteryVoltage = getParameter(
     ParameterPrefix.SYSTEM,
@@ -117,7 +133,6 @@ export async function controllerGetData(query: {
     querySPDeviceLastData,
     queryDeviceParsEs,
     deviceData: queryDeviceList.device[0],
-    // queryDeviceList: queryDeviceList.device,
     formattedData: {
       battery_voltage: bt_battery_voltage,
       battery_status: bt_battery_status,
@@ -163,4 +178,12 @@ export async function controllerGetData(query: {
   );
 
   return payload;
+}
+
+export async function getInverterSnapshot() {
+  const { createInverter } = await import('../../devices');
+  const { automationState } = await import('../../automation/state');
+  const model = automationState.settings.inverter?.model || 'anenji-6200';
+  const inverter = createInverter(model);
+  return inverter.getSnapshot();
 }

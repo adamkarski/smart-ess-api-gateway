@@ -29,7 +29,44 @@ Build and start server. Listening by default on 3000 port
 Or use complete docker image https://hub.docker.com/r/antoxa1081/smart-ess-api-gateway
 
 <br>
-*HA rest configuration.yaml
+
+## Project Status: PV Monitor Pro (Offline-First Edition)
+
+### ✅ Completed Features
+
+#### 1. Architecture & Service
+- **macOS System Service:** Automated startup and lifecycle management via `./manage.sh`.
+- **Background Engine:** Real-time automation engine processing logic cycles every few seconds/minutes.
+- **Persistence:** All configurations, node positions, and logic links are stored locally in `data/automation.json`.
+
+#### 2. Tuya Local Subsystem (Offline-First)
+- **Direct LAN Control:** Communication via `tuyapi` directly over WiFi (Port 6668). No cloud required for operation.
+- **Resilient Mapping:** Uses `internal_app_id` to protect automations from hardware resets. Logic is preserved even if Device ID or Local Key changes.
+- **On-Demand Sync:** Cloud API used only on request to fetch/update cryptographic keys.
+- **Intelligent Merge:** Merges cloud data by ID or Name to prevent duplication.
+
+#### 3. Visual Flow Builder (Automation)
+- **Interactive Canvas:** Draggable device nodes with real-time data overlays.
+- **SVG Linking:** Visual "cables" connecting outputs to inputs for data pipelining.
+- **In-Node Logic:** Each node (Inverter, Weather, Tuya) has its own logic settings (Parameter -> Operator -> Threshold).
+- **Console Output:** Dedicated "Action Console" node for real-time debugging of logic results.
+
+#### 4. Restored Dashboard
+- **Rich Metrics:** PV Power (W), Energy Today (kWh), SOC (%), Battery ETA (hours left).
+- **Net Balance:** Detailed Import/Export metrics with visual progress bar.
+- **Animations:** Glow effects for charging/discharging and live status indicators.
+
+### 🛠️ Still To Do (Roadmap)
+
+- [ ] **Advanced Graph Traversal:** Improve the backend to handle complex chains (Node A -> Node B -> Node C) with full conditional branching.
+- [ ] **Granular Tuya Actions:** Allow selecting specific DPS and values for actions (currently defaults to Power ON/OFF).
+- [ ] **Mobile Optimization:** Adapt the Flow Builder canvas for touch devices.
+- [ ] **Data History Persistence:** Store long-term energy stats in a local database (SQLite/NeDB) for historical charts.
+- [ ] **Cloud Plan Monitor:** Add a specific warning in the UI when the Tuya Cloud Development plan expires.
+- [ ] **Security:** Add basic password protection for the web interface.
+
+---
+*Original HA configuration reference*
 
 ```yaml
 rest:

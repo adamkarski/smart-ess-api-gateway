@@ -1,0 +1,557 @@
+{
+  "nodes": {},
+  "links": [
+    {
+      "id": "link-1781186275833",
+      "fromNode": "node-1781186254857",
+      "toNode": "node-1781186271680"
+    }
+  ],
+  "settings": {
+    "weather": {
+      "apiKey": "5d652f0bff80d46c6a9ce422c48e4296",
+      "lat": "49.88079",
+      "lon": "19.56296"
+    },
+    "tuya": {
+      "apiKey": "xmdyfty4pwshcp4nwmtq",
+      "apiSecret": "2acf28fd1f474a1b932fc93f10ff30d0",
+      "region": "EU"
+    },
+    "solar": {
+      "kwp": 4.2,
+      "tilt": 90,
+      "azimuth": 203,
+      "elevation": 340,
+      "batteryKwh": 16,
+      "inverterKw": 6.4
+    },
+    "dess": {
+      "pn": "Q0046526419165",
+      "sn": "Q0046526419165094801",
+      "devcode": "2376",
+      "devaddr": "1",
+      "batteryVoltage": 48,
+      "username": "toshinori"
+    },
+    "inverter": {
+      "brand": "ANENJI",
+      "model": "anenji-6200"
+    },
+    "bms": {
+      "brand": "JKBMS",
+      "model": "",
+      "host": ""
+    },
+    "tariff": {
+      "provider": "G12w",
+      "source": "static",
+      "peakRanges": [
+        {
+          "start": "06:00",
+          "end": "13:00",
+          "type": "peak"
+        },
+        {
+          "start": "15:00",
+          "end": "22:00",
+          "type": "peak"
+        }
+      ],
+      "offpeakRanges": [
+        {
+          "start": "13:00",
+          "end": "15:00",
+          "type": "offpeak"
+        },
+        {
+          "start": "22:00",
+          "end": "06:00",
+          "type": "offpeak"
+        }
+      ],
+      "peakPricePerKwh": 0.85,
+      "offpeakPricePerKwh": 0.55,
+      "dynamicThreshold": 300,
+      "dynamicPrices": []
+    },
+    "dashboard_widgets": [
+      {
+        "id": "widget-mq74c9uo-n23",
+        "title": "Bateria",
+        "sourceType": "preset-battery",
+        "unit": "%",
+        "color": "text-teal-500"
+      },
+      {
+        "id": "widget-mq74cqd3-39z",
+        "title": "Panele PV",
+        "sourceType": "preset-pv",
+        "unit": "W",
+        "color": "text-orange-500"
+      },
+      {
+        "id": "widget-mq74dfa6-toi",
+        "title": "Tauron",
+        "sourceType": "preset-grid",
+        "unit": "W",
+        "color": "text-purple-500"
+      },
+      {
+        "id": "widget-mq73pcet-abs",
+        "title": "CWU",
+        "sourceType": "tuya",
+        "unit": "°C",
+        "color": "text-purple-500",
+        "subParam": "101",
+        "subUnit": "°C",
+        "dpsDivisor": 10,
+        "subDivisor": 10,
+        "deviceId": "tuya-bfc53dee-mpszsbav",
+        "dpsKey": "106"
+      },
+      {
+        "id": "widget-mq75qlwy-bap",
+        "title": "Dom",
+        "sourceType": "preset-load",
+        "unit": "W",
+        "color": "text-blue-500"
+      },
+      {
+        "id": "widget-mq8n82o2-7ai",
+        "title": "bateria",
+        "sourceType": "preset-battery-runtime",
+        "unit": "h",
+        "color": "text-cyan-500"
+      }
+    ]
+  },
+  "weatherData": {
+    "temp": 12.46,
+    "description": "overcast clouds",
+    "isSunny": false,
+    "clouds": 90,
+    "forecast": [
+      {
+        "dt": 1781254800,
+        "temp": 18.77,
+        "clouds": 5,
+        "description": "clear sky",
+        "icon": "01d",
+        "isSunny": true,
+        "dayOffset": 1
+      },
+      {
+        "dt": 1781341200,
+        "temp": 14.8,
+        "clouds": 97,
+        "description": "overcast clouds",
+        "icon": "04d",
+        "isSunny": false,
+        "dayOffset": 2
+      },
+      {
+        "dt": 1781427600,
+        "temp": 16.12,
+        "clouds": 85,
+        "description": "light rain",
+        "icon": "10d",
+        "isSunny": false,
+        "dayOffset": 3
+      },
+      {
+        "dt": 1781514000,
+        "temp": 16.56,
+        "clouds": 100,
+        "description": "overcast clouds",
+        "icon": "04d",
+        "isSunny": false,
+        "dayOffset": 4
+      }
+    ],
+    "raw": {
+      "coord": {
+        "lon": 19.563,
+        "lat": 49.8808
+      },
+      "weather": [
+        {
+          "id": 804,
+          "main": "Clouds",
+          "description": "overcast clouds",
+          "icon": "04d"
+        }
+      ],
+      "base": "stations",
+      "main": {
+        "temp": 12.46,
+        "feels_like": 11.72,
+        "temp_min": 12.46,
+        "temp_max": 12.46,
+        "pressure": 1018,
+        "humidity": 75,
+        "sea_level": 1018,
+        "grnd_level": 975
+      },
+      "visibility": 10000,
+      "wind": {
+        "speed": 4.07,
+        "deg": 302,
+        "gust": 5.11
+      },
+      "clouds": {
+        "all": 90
+      },
+      "dt": 1781190121,
+      "sys": {
+        "type": 2,
+        "id": 2096950,
+        "country": "PL",
+        "sunrise": 1781145205,
+        "sunset": 1781203769
+      },
+      "timezone": 7200,
+      "id": 3096162,
+      "name": "Klecza Dolna",
+      "cod": 200
+    },
+    "timestamp": 1781190121135
+  },
+  "solarForecast": {
+    "expected_pv_hourly": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      4,
+      15,
+      13,
+      54,
+      174,
+      358,
+      514,
+      308,
+      1022,
+      902,
+      473,
+      1025,
+      570,
+      405,
+      201,
+      19,
+      0,
+      0
+    ],
+    "expected_pv_today_peak": 1025,
+    "expected_pv_today_sum_kwh": 6.1,
+    "expected_pv_now": 1025,
+    "daily_sum_kwh": [
+      6.1,
+      16.6,
+      10.8,
+      11.5
+    ],
+    "daily_peak": [
+      1025,
+      2030,
+      1564,
+      1362
+    ],
+    "forecast_hourly": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        15,
+        13,
+        54,
+        174,
+        358,
+        514,
+        308,
+        1022,
+        902,
+        473,
+        1025,
+        570,
+        405,
+        201,
+        19,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        9,
+        120,
+        199,
+        499,
+        788,
+        1203,
+        1353,
+        1773,
+        1867,
+        2030,
+        1944,
+        1588,
+        1417,
+        1039,
+        554,
+        159,
+        33,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        24,
+        231,
+        137,
+        101,
+        681,
+        1142,
+        1072,
+        817,
+        1155,
+        1250,
+        1564,
+        1178,
+        954,
+        379,
+        128,
+        16,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        86,
+        204,
+        368,
+        507,
+        607,
+        815,
+        1052,
+        1219,
+        1326,
+        1362,
+        1301,
+        1130,
+        874,
+        519,
+        118,
+        25,
+        0,
+        0
+      ]
+    ],
+    "forecast_dates": [
+      "2026-06-11",
+      "2026-06-12",
+      "2026-06-13",
+      "2026-06-14"
+    ],
+    "timestamp": 1781190121396
+  },
+  "tuya_devices": {
+    "tuya-bf1edb95-mpszsbav": {
+      "internal_app_id": "tuya-bf1edb95-mpszsbav",
+      "tuya_device_id": "bf1edb954ab9cd240ezcth",
+      "local_key": "esmufnYkW4MxAR<U",
+      "ip": null,
+      "name": "Motion Sensor",
+      "status": "online",
+      "last_sync": 1781190136053,
+      "version": "3.4",
+      "category": "tdq",
+      "product_id": "gk0d4i8g5akryd9d",
+      "last_dps": {
+        "101": "none",
+        "102": "middle"
+      },
+      "last_dps_translated": {
+        "102": "middle",
+        "Luminance": "none"
+      },
+      "last_dps_time": 1781190420665
+    },
+    "tuya-bfd64877-mpszsbav": {
+      "internal_app_id": "tuya-bfd64877-mpszsbav",
+      "tuya_device_id": "bfd64877960d2e26e7aqlj",
+      "local_key": "AZ@}+/b1?wmH~k;o",
+      "ip": "192.168.8.50",
+      "name": "TAURON",
+      "status": "online",
+      "last_sync": 1781190136053,
+      "version": "3.4",
+      "category": "dlq",
+      "product_id": "dmtrpqibupjoxiq4",
+      "last_dps": {
+        "1": false,
+        "9": 0,
+        "17": 1,
+        "18": 0,
+        "19": 0,
+        "20": 2339,
+        "21": 2,
+        "22": 0,
+        "23": 0,
+        "24": 0,
+        "25": 0,
+        "26": 0,
+        "38": "off",
+        "40": "relay",
+        "41": false,
+        "42": "",
+        "47": 26,
+        "66": "online"
+      },
+      "last_dps_translated": {
+        "1": false,
+        "9": 0,
+        "17": 1,
+        "18": 0,
+        "19": 0,
+        "20": 2339,
+        "21": 2,
+        "22": 0,
+        "23": 0,
+        "24": 0,
+        "25": 0,
+        "26": 0,
+        "38": "off",
+        "40": "relay",
+        "41": false,
+        "42": "",
+        "47": 26,
+        "66": "online"
+      },
+      "last_dps_time": 1781190421379
+    },
+    "tuya-bfc53dee-mpszsbav": {
+      "internal_app_id": "tuya-bfc53dee-mpszsbav",
+      "tuya_device_id": "bfc53dee2685cf9ca2or8v",
+      "local_key": "ixeX(izHji[(=OxY",
+      "ip": null,
+      "name": "CWU zbiornik",
+      "status": "online",
+      "last_sync": 1781190136053,
+      "category": "tdq",
+      "product_id": "jc1afi7ow32okd0h",
+      "last_dps": {
+        "101": 171,
+        "102": 66,
+        "103": "middle",
+        "104": 0,
+        "105": 0,
+        "106": 190,
+        "107": 0
+      },
+      "last_dps_translated": {
+        "Temperature": 171,
+        "Humidity": 66,
+        "Battery State": "middle",
+        "Temp Calibration": 0,
+        "Hum Calibration": 0,
+        "External Temperature": 190,
+        "Temp Correction": 0
+      },
+      "last_dps_time": 1781190422451
+    },
+    "tuya-bf8beef7-mpszsbav": {
+      "internal_app_id": "tuya-bf8beef7-mpszsbav",
+      "tuya_device_id": "bf8beef772cee0beb5aegc",
+      "local_key": "A[*?;T{y~0N#sZ+c",
+      "ip": "192.168.8.82",
+      "name": "CWU piwnica 2x",
+      "status": "online",
+      "last_sync": 1781190136053,
+      "version": "3.5",
+      "category": "tdq",
+      "product_id": "l0haolo9qa8rn8t0",
+      "last_dps": {
+        "1": false,
+        "38": "2",
+        "39": "relay",
+        "43": "AAAC",
+        "47": "flip"
+      },
+      "last_dps_translated": {
+        "1": false,
+        "38": "2",
+        "39": "relay",
+        "43": "AAAC",
+        "47": "flip"
+      },
+      "last_dps_time": 1781190423075
+    },
+    "tuya-bfab84a1-mq71qrkj": {
+      "internal_app_id": "tuya-bfab84a1-mq71qrkj",
+      "tuya_device_id": "bfab84a1db82b97beevz0p",
+      "local_key": "z1z~c1gv?r@&pyo|",
+      "ip": "192.168.8.4",
+      "name": "poidlo",
+      "status": "online",
+      "version": "3.5",
+      "last_sync": 1781190136053,
+      "category": "cz",
+      "product_id": "hthgmqorwcz7i4v2",
+      "last_dps": {
+        "1": false,
+        "9": 0,
+        "18": 0,
+        "19": 0,
+        "20": 2337,
+        "21": 1,
+        "22": 579,
+        "23": 28486,
+        "24": 15490,
+        "25": 2680,
+        "26": 0,
+        "38": "memory",
+        "39": false,
+        "41": false,
+        "44": ""
+      },
+      "last_dps_translated": {
+        "1": false,
+        "9": 0,
+        "18": 0,
+        "19": 0,
+        "20": 2337,
+        "21": 1,
+        "22": 579,
+        "23": 28486,
+        "24": 15490,
+        "25": 2680,
+        "26": 0,
+        "38": "memory",
+        "39": false,
+        "41": false,
+        "44": ""
+      },
+      "last_dps_time": 1781190423820
+    }
+  },
+  "_tick": 12
+}

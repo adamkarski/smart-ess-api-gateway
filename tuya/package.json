@@ -1,0 +1,16 @@
+{
+    "name": "tuya-local-manager",
+    "version": "1.0.0",
+    "description": "Tuya Local Control Manager z panelem webowym",
+    "main": "tuya-local-manager.js",
+    "scripts": {
+      "start": "node tuya-local-manager.js",
+      "dev": "node tuya-local-manager.js"
+    },
+    "dependencies": {
+      "express": "^4.19.2",
+      "node-cron": "^3.0.3"
+    },
+    "author": "",
+    "license": "ISC"
+  }

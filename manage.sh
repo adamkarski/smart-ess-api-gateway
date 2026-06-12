@@ -40,7 +40,7 @@ case "$1" in
     <key>ProgramArguments</key>
     <array>
         <string>$NODE_BIN</string>
-        <string>$PROJECT_DIR/dist/main.js</string>
+        <string>$PROJECT_DIR/dist/src/main.js</string>
     </array>
     <key>WorkingDirectory</key>
     <string>$PROJECT_DIR</string>
@@ -87,14 +87,20 @@ EOF
     fi
     ;;
   restart)
-    if [ ! -f "$PLIST_PATH" ]; then
-        $0 setup
-    else
-        if is_loaded; then
-            launchctl unload "$PLIST_PATH"
+    echo "Building project..."
+    if npm run build; then
+        if [ ! -f "$PLIST_PATH" ]; then
+            $0 setup
+        else
+            if is_loaded; then
+                launchctl unload "$PLIST_PATH"
+            fi
+            launchctl load "$PLIST_PATH"
+            echo "Service restarted at $(get_url)"
         fi
-        launchctl load "$PLIST_PATH"
-        echo "Service restarted at $(get_url)"
+    else
+        echo "Build failed! Restart aborted."
+        exit 1
     fi
     ;;
   status)

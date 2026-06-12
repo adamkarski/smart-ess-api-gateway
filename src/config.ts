@@ -16,4 +16,9 @@ export const appConfig = {
       batteryVoltage: Number(env.DEVICE_BATTERY_VOLTAGE ?? '48'),
     },
   },
+  tuya: {
+    apiKey: env.TUYA_API_KEY || '',
+    apiSecret: env.TUYA_API_SECRET || '',
+    region: env.TUYA_REGION || 'eu',
+  },
 };

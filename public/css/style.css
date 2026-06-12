@@ -1,0 +1,377 @@
+/* 
+   PV Monitor PRO - Custom Styles
+   Feel free to modify these to change the look of your dashboard!
+*/
+
+@import url('https://fonts.cdnfonts.com/css/lcd');
+
+/* Local Font Fallback */
+@font-face {
+    font-family: 'LCD ITC Local';
+    src: url('../LCD ITC Normal.ttf') format('truetype');
+}
+
+body { 
+    background-color: #020617; 
+    scroll-behavior: smooth; 
+}
+
+.glass { 
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px); 
+    background-color: rgba(30, 41, 59, 0.7);
+}
+
+/* Digital LCD Look - Applied ONLY to numeric values */
+.lcd-text { 
+    font-family: 'LCD', 'LCD ITC Local', 'LCD ITC', monospace !important; 
+    letter-spacing: 2px;
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Standard Inter font for units and labels */
+.unit-text {
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 400;
+    font-size: 0.6em;
+    margin-left: 2px;
+    color: #64748b;
+    vertical-align: baseline;
+}
+
+/* Card States & Animations */
+.tab-btn.active { 
+    border-bottom: 2px solid #2dd4bf; 
+    color: #fff; 
+}
+
+@keyframes pulse-glow-green { 
+    0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); } 
+    50% { box-shadow: 0 0 20px 2px rgba(16, 185, 129, 0.1); } 
+}
+
+@keyframes pulse-glow-orange { 
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249, 168, 38, 0.2); } 
+    50% { box-shadow: 0 0 20px 2px rgba(249, 168, 38, 0.1); } 
+}
+
+.charge-glow { 
+    animation: pulse-glow-green 2s infinite; 
+    border-color: rgba(16, 185, 129, 0.5) !important; 
+}
+
+.discharge-glow { 
+    animation: pulse-glow-orange 2s infinite; 
+    border-color: rgba(249, 168, 38, 0.5) !important; 
+}
+
+/* Progress Rings */
+.circle-progress { 
+    transform: rotate(-90deg); 
+    transform-origin: 50% 50%; 
+}
+
+.progress-ring__circle { 
+    transition: stroke-dashoffset 1s ease-in-out; 
+}
+
+
+#settings-list div svg.bg-icon {
+
+    /* display: none; */
+    font-size: 166px;
+}
+
+/* Automation Canvas */
+#automation-canvas {
+    background-image: radial-gradient(circle, #1e293b 1px, transparent 1px);
+    background-size: 30px 30px;
+    min-height: 550px;
+    position: relative;
+}
+.node {
+    position: absolute;
+    width: 160px;
+    background: rgba(15, 23, 42, 0.95);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 12px;
+    cursor: move;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    transition: border-color 0.2s, transform 0.1s;
+    z-index: 10;
+    user-select: none;
+}
+
+.node:hover { 
+    border-color: #2dd4bf; 
+}
+
+.node:active {
+    transform: scale(0.98);
+}
+
+.node.selected {
+    border-color: #2dd4bf !important;
+    box-shadow: 0 0 15px rgba(45, 212, 191, 0.4);
+}
+
+/* Sockets */
+.socket {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #334155;
+    border: 2px solid #94a3b8;
+    border-radius: 50%;
+    z-index: 20;
+    transition: all 0.2s;
+    cursor: crosshair;
+}
+
+.socket:hover {
+    background: #2dd4bf;
+    border-color: #fff;
+    transform: scale(1.3);
+}
+
+.socket-in { left: -6px; top: calc(50% - 6px); }
+.socket-out { right: -6px; top: calc(50% - 6px); }
+
+/* Connection Lines */
+.flow-line {
+    fill: none;
+    stroke: rgba(45, 212, 191, 0.4);
+    stroke-width: 3;
+    stroke-dasharray: 5, 5;
+    animation: flow-dash 10s linear infinite;
+    pointer-events: none;
+    transition: stroke 0.2s, stroke-width 0.2s, filter 0.2s;
+}
+
+.flow-line-hover {
+    stroke: rgba(239, 68, 68, 0.9) !important;
+    stroke-width: 5;
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.7));
+}
+
+@keyframes flow-dash {
+    to { stroke-dashoffset: -100; }
+}
+
+/* Modal for Editing (Fullscreen) */
+#node-edit-overlay {
+    animation: fade-in 0.2s ease-out;
+    transition: opacity 0.2s ease-out;
+}
+
+#node-edit-overlay.closing {
+    opacity: 0;
+}
+
+#node-edit-panel {
+    transition: opacity 0.2s ease-out;
+    overflow: hidden;
+}
+
+#node-edit-overlay.closing #node-edit-panel {
+    opacity: 0;
+}
+
+#edit-content {
+    background-color: #080c12;
+    scrollbar-width: thin;
+    scrollbar-color: #334155 transparent;
+}
+
+#edit-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+#edit-content::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 3px;
+}
+
+@media (max-width: 640px) {
+    #node-edit-overlay {
+        top: 56px !important;
+    }
+    #edit-content {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    #node-edit-panel .grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modal-enter {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Context Menu */
+#node-context-menu {
+    animation: fade-in 0.15s ease-out;
+}
+
+/* Resize handles for label nodes */
+.resize-handle {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #ec4899;
+    border: 2px solid #fff;
+    border-radius: 3px;
+    z-index: 30;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    pointer-events: auto;
+    box-shadow: 0 0 6px rgba(236, 72, 153, 0.5);
+}
+.resize-handle:hover {
+    transform: scale(1.3);
+}
+.node-label.selected .resize-handle {
+    opacity: 1;
+}
+
+/* Label Node */
+.node-label {
+    position: relative;
+    border-radius: 8px !important;
+    padding: 0 !important;
+    cursor: grab;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.node-label.selected {
+    border-color: #ec4899 !important;
+    box-shadow: 0 0 15px rgba(236, 72, 153, 0.3) !important;
+}
+.node-label:hover {
+    border-color: #ec4899 !important;
+}
+.node-label.drop-target {
+    border-color: #22c55e !important;
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.4), inset 0 0 20px rgba(34, 197, 94, 0.1) !important;
+    transition: border-color 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Tab Transitions */
+.tab-content {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tab-content.hidden {
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+/* Smooth entry when switching */
+.animate-tab-entry {
+    animation: tab-enter 0.4s ease-out forwards;
+}
+
+@keyframes tab-enter {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Dashboard Widgets */
+.custom-widget {
+    position: relative;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.custom-widget:hover {
+    border-color: rgba(45, 212, 191, 0.4);
+}
+
+.widget-edit-mode .custom-widget {
+    border-color: rgba(234, 179, 8, 0.4);
+    box-shadow: 0 0 12px rgba(234, 179, 8, 0.1);
+}
+
+.widget-edit-mode .custom-widget::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px dashed rgba(234, 179, 8, 0.3);
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.widget-delete-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    background: #ef4444;
+    color: white;
+    border: 2px solid rgba(0,0,0,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 20;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+}
+
+.custom-widget:hover .widget-delete-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.widget-add-placeholder {
+    border: 2px dashed rgba(45, 212, 191, 0.3);
+    background: rgba(45, 212, 191, 0.03);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.widget-add-placeholder:hover {
+    border-color: rgba(45, 212, 191, 0.6);
+    background: rgba(45, 212, 191, 0.08);
+}
+
+/* Responsive widget sizing */
+@media (max-width: 1200px) {
+    .dashboard-widget-card {
+        width: calc(33.333% - 16px) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-widget-card {
+        width: calc(50% - 12px) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-widget-card {
+        width: 100% !important;
+    }
+}

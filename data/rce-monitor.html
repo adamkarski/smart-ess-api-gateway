@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pl" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RCE Monitor – Ceny Prądu PSE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root,[data-theme="light"]{
+  --bg:#f5f5f0;--surface:#ffffff;--surface2:#f9f9f6;--border:#e0ddd8;
+  --text:#1a1a18;--muted:#6b6b68;--faint:#b0afac;
+  --primary:#01696f;--primary-light:#e8f4f4;
+  --cheap:#1e7c3a;--cheap-bg:#e8f5ec;
+  --expensive:#c0392b;--expensive-bg:#fdecea;
+  --mid:#d67c00;--mid-bg:#fef6e4;
+  --shadow:0 2px 8px rgba(0,0,0,0.08);
+  --radius:10px;--radius-sm:6px;
+  --transition:180ms cubic-bezier(0.16,1,0.3,1);
+}
+[data-theme="dark"]{
+  --bg:#141413;--surface:#1c1c1a;--surface2:#222220;--border:#333330;
+  --text:#d0cfcc;--muted:#7a7a76;--faint:#4a4a48;
+  --primary:#4f9ea3;--primary-light:#1a3535;
+  --cheap:#4caf68;--cheap-bg:#1a3024;
+  --expensive:#e07060;--expensive-bg:#3a1e1e;
+  --mid:#f0a84a;--mid-bg:#3a2c14;
+}
+html{font-family:'Inter',sans-serif;font-size:16px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+body{min-height:100dvh;padding:0}
+a,button,[role="button"]{transition:color var(--transition),background var(--transition),border-color var(--transition),box-shadow var(--transition)}
+button{cursor:pointer;border:none;background:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}
+
+/* Layout */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.logo{display:flex;align-items:center;gap:0.6rem;font-weight:600;font-size:1rem;color:var(--text)}
+.logo svg{color:var(--primary)}
+.header-right{display:flex;align-items:center;gap:0.8rem}
+.theme-btn{padding:0.4rem;border-radius:var(--radius-sm);color:var(--muted);display:flex;align-items:center}
+.theme-btn:hover{color:var(--text);background:var(--surface2)}
+.date-badge{font-size:0.8rem;color:var(--muted);font-family:'JetBrains Mono',monospace;background:var(--surface2);padding:0.3rem 0.7rem;border-radius:var(--radius-sm)}
+
+.main{max-width:1100px;margin:0 auto;padding:1.5rem 1rem}
+.grid-top{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;box-shadow:var(--shadow)}
+.kpi-label{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.4rem}
+.kpi-value{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:600;line-height:1;color:var(--text)}
+.kpi-unit{font-size:0.9rem;font-weight:400;color:var(--muted);margin-left:0.2rem}
+.kpi-sub{font-size:0.78rem;color:var(--muted);margin-top:0.3rem}
+.kpi.cheap .kpi-value{color:var(--cheap)}
+.kpi.expensive .kpi-value{color:var(--expensive)}
+.kpi.mid .kpi-value{color:var(--mid)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;box-shadow:var(--shadow);margin-bottom:1rem}
+.card-title{font-size:0.9rem;font-weight:600;color:var(--text);margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.card-title span{font-size:0.78rem;color:var(--muted);font-weight:400}
+.chart-wrap{height:220px;position:relative}
+
+/* Taryfy tabela */
+.taryfy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.8rem}
+.taryfa-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem}
+.taryfa-name{font-weight:600;font-size:0.9rem;color:var(--text);margin-bottom:0.6rem;display:flex;align-items:center;gap:0.5rem}
+.taryfa-badge{font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:100px;font-weight:500}
+.badge-active{background:var(--cheap-bg);color:var(--cheap)}
+.badge-mid{background:var(--mid-bg);color:var(--mid)}
+.taryfa-row{display:flex;justify-content:space-between;align-items:center;padding:0.3rem 0;border-bottom:1px solid var(--border);font-size:0.82rem}
+.taryfa-row:last-child{border-bottom:none}
+.taryfa-row .label{color:var(--muted)}
+.taryfa-row .val{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--text)}
+.zone-cheap{color:var(--cheap)}
+.zone-exp{color:var(--expensive)}
+.zone-mid{color:var(--mid)}
+
+/* Status */
+.status-bar{display:flex;align-items:center;gap:0.5rem;padding:0.7rem 1rem;border-radius:var(--radius-sm);font-size:0.82rem;margin-bottom:1rem}
+.status-bar.loading{background:var(--mid-bg);color:var(--mid)}
+.status-bar.ok{background:var(--cheap-bg);color:var(--cheap)}
+.status-bar.err{background:var(--expensive-bg);color:var(--expensive)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 1.5s ease-in-out infinite}
+.dot.static{animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* Current zone display */
+.current-zone{display:flex;align-items:center;gap:0.7rem;padding:0.9rem 1.2rem;border-radius:var(--radius-sm);margin-bottom:1rem;font-size:0.88rem;font-weight:500}
+.current-zone.cheap{background:var(--cheap-bg);color:var(--cheap)}
+.current-zone.expensive{background:var(--expensive-bg);color:var(--expensive)}
+.current-zone.mid{background:var(--mid-bg);color:var(--mid)}
+.zone-icon{font-size:1.4rem}
+
+/* Refresh btn */
+.btn-refresh{display:flex;align-items:center;gap:0.4rem;background:var(--primary);color:#fff;padding:0.5rem 1rem;border-radius:var(--radius-sm);font-size:0.83rem;font-weight:500}
+.btn-refresh:hover{opacity:0.88}
+.btn-refresh svg{width:14px;height:14px}
+
+/* Hourly table */
+.hourly-table{width:100%;border-collapse:collapse;font-size:0.82rem;font-family:'JetBrains Mono',monospace}
+.hourly-table th{text-align:left;padding:0.4rem 0.6rem;color:var(--muted);font-weight:500;border-bottom:2px solid var(--border)}
+.hourly-table td{padding:0.4rem 0.6rem;border-bottom:1px solid var(--border)}
+.hourly-table tr.row-cheap td{background:var(--cheap-bg);color:var(--cheap)}
+.hourly-table tr.row-exp td{background:var(--expensive-bg);color:var(--expensive)}
+.hourly-table tr.row-mid td{background:var(--mid-bg);color:var(--mid)}
+.hourly-table tr.row-now td{font-weight:700;border-left:3px solid var(--primary)}
+.table-scroll{max-height:300px;overflow-y:auto}
+
+@media(max-width:640px){
+  .grid-top{grid-template-columns:1fr 1fr}
+  .kpi-value{font-size:1.4rem}
+  .taryfy-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+    </svg>
+    RCE Monitor
+  </div>
+  <div class="header-right">
+    <div class="date-badge" id="dateBadge">—</div>
+    <button class="theme-btn" data-theme-toggle aria-label="Przełącz motyw">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main class="main">
+
+  <div id="statusBar" class="status-bar loading">
+    <div class="dot"></div>
+    <span>Pobieranie danych z API PSE…</span>
+  </div>
+
+  <div class="grid-top">
+    <div class="kpi" id="kpiCurrent">
+      <div class="kpi-label">Aktualna cena RCE</div>
+      <div class="kpi-value">—<span class="kpi-unit">zł/kWh</span></div>
+      <div class="kpi-sub">—</div>
+    </div>
+    <div class="kpi" id="kpiMin">
+      <div class="kpi-label">Min dzisiaj</div>
+      <div class="kpi-value">—<span class="kpi-unit">zł/kWh</span></div>
+      <div class="kpi-sub">—</div>
+    </div>
+    <div class="kpi" id="kpiMax">
+      <div class="kpi-label">Max dzisiaj</div>
+      <div class="kpi-value">—<span class="kpi-unit">zł/kWh</span></div>
+      <div class="kpi-sub">—</div>
+    </div>
+    <div class="kpi" id="kpiAvg">
+      <div class="kpi-label">Średnia dzisiaj</div>
+      <div class="kpi-value">—<span class="kpi-unit">zł/kWh</span></div>
+      <div class="kpi-sub">PLN/MWh → PLN/kWh</div>
+    </div>
+  </div>
+
+  <div id="currentZone" class="current-zone" style="display:none">
+    <span class="zone-icon">⚡</span>
+    <span id="currentZoneText">—</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      Wykres godzinowy cen RCE (PLN/kWh)
+      <button class="btn-refresh" onclick="loadData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Odśwież
+      </button>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="rceChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Taryfy strefowe 2026 — godziny i ceny brutto all-in</div>
+    <div class="taryfy-grid" id="taryfyGrid">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      Dane godzinowe dzisiaj
+      <span id="tableDate">—</span>
+    </div>
+    <div class="table-scroll">
+      <table class="hourly-table">
+        <thead><tr><th>Okres</th><th>PLN/MWh</th><th>PLN/kWh</th><th>Strefa G12</th></tr></thead>
+        <tbody id="hourlyBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── Dark mode toggle ──
+(function(){
+  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
+  let d=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+  r.setAttribute('data-theme',d);
+  updateIcon(d);
+  t&&t.addEventListener('click',()=>{d=d==='dark'?'light':'dark';r.setAttribute('data-theme',d);updateIcon(d)});
+  function updateIcon(m){if(!t)return;t.innerHTML=m==='dark'?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'}
+})();
+
+// ── Taryfy danych ──
+const TARYFY = [
+  {
+    name:"G12", operators:"PGE / Tauron / Enea / Energa / Stoen",
+    badge:"popular", badgeClass:"badge-active",
+    zones:[
+      {label:"Tanie (NOC + POPOŁUDNIE)", hours:"22:00–06:00, 13:00–15:00", price:"0,46–0,64", cls:"zone-cheap"},
+      {label:"Drogie (DZIEŃ)", hours:"06:00–13:00, 15:00–22:00", price:"1,08–1,25", cls:"zone-exp"},
+    ]
+  },
+  {
+    name:"G12w", operators:"PGE / Tauron / Enea / Energa",
+    badge:"weekendy", badgeClass:"badge-mid",
+    zones:[
+      {label:"Tanie (NOC + WEEKEND)", hours:"22:00–06:00 Pn–Pt + Sb–Nd 00:00–24:00", price:"0,43–0,69", cls:"zone-cheap"},
+      {label:"Drogie (DZIEŃ Pn–Pt)", hours:"06:00–13:00, 15:00–22:00 Pn–Pt", price:"0,62–1,30", cls:"zone-exp"},
+    ]
+  },
+  {
+    name:"G13 (lato)", operators:"PGE / Tauron / Enea / Energa",
+    badge:"sezonowa", badgeClass:"badge-active",
+    zones:[
+      {label:"Tanie (NOC)", hours:"22:00–07:00 + Sb–Nd 00:00–24:00", price:"0,40–0,55", cls:"zone-cheap"},
+      {label:"Przejściowa (POŁUDNIE)", hours:"13:00–19:00 Pn–Pt", price:"0,63–0,91", cls:"zone-mid"},
+      {label:"Drogie (SZCZYT)", hours:"07:00–13:00, 19:00–22:00 Pn–Pt", price:"0,80–1,50", cls:"zone-exp"},
+    ]
+  },
+  {
+    name:"G13 (zima)", operators:"PGE / Tauron / Enea / Energa",
+    badge:"sezonowa", badgeClass:"badge-mid",
+    zones:[
+      {label:"Tanie (NOC)", hours:"21:00–07:00 + Sb–Nd 00:00–24:00", price:"0,40–0,55", cls:"zone-cheap"},
+      {label:"Przejściowa (POŁUDNIE)", hours:"13:00–16:00 Pn–Pt", price:"0,63–0,91", cls:"zone-mid"},
+      {label:"Drogie (SZCZYT)", hours:"07:00–13:00, 16:00–21:00 Pn–Pt", price:"0,80–1,50", cls:"zone-exp"},
+    ]
+  },
+  {
+    name:"G12 (Enea)", operators:"Enea – inne strefy",
+    badge:"enea", badgeClass:"badge-mid",
+    zones:[
+      {label:"Tanie (NOC + WEEKEND)", hours:"21:00–06:00 Pn–Pt + Sb–Nd 00:00–24:00", price:"0,59", cls:"zone-cheap"},
+      {label:"Drogie (DZIEŃ Pn–Pt)", hours:"06:00–21:00 Pn–Pt", price:"1,20", cls:"zone-exp"},
+    ]
+  },
+  {
+    name:"G11", operators:"Wszyscy operatorzy",
+    badge:"jednozofowa", badgeClass:"badge-mid",
+    zones:[
+      {label:"Jedna strefa (CAŁODOBOWA)", hours:"00:00–24:00", price:"0,96–1,35", cls:"zone-mid"},
+    ]
+  },
+];
+
+function renderTaryfy(){
+  const g=document.getElementById('taryfyGrid');
+  g.innerHTML=TARYFY.map(t=>`
+    <div class="taryfa-card">
+      <div class="taryfa-name">
+        ${t.name}
+        <span class="taryfa-badge ${t.badgeClass}">${t.badge}</span>
+      </div>
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.6rem">${t.operators}</div>
+      ${t.zones.map(z=>`
+        <div class="taryfa-row">
+          <div class="label">${z.label}</div>
+          <div></div>
+        </div>
+        <div class="taryfa-row" style="padding-bottom:0.5rem">
+          <div class="label" style="font-size:0.75rem;opacity:0.8">${z.hours}</div>
+          <div class="val ${z.cls}">${z.price} zł/kWh</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+// ── G12 zone checker ──
+function getG12Zone(hour, minute=0){
+  const h=hour+(minute/60);
+  if(h>=22||h<6)return{label:"🟢 TANIA (22:00–06:00)",cls:"cheap"};
+  if(h>=13&&h<15)return{label:"🟢 TANIA (13:00–15:00)",cls:"cheap"};
+  return{label:"🔴 DROGA",cls:"expensive"};
+}
+
+// ── Chart ──
+let chart=null;
+function renderChart(labels,values,nowIndex){
+  const ctx=document.getElementById('rceChart').getContext('2d');
+  const root=getComputedStyle(document.documentElement);
+  const cheap=root.getPropertyValue('--cheap').trim();
+  const exp=root.getPropertyValue('--expensive').trim();
+  const mid=root.getPropertyValue('--mid').trim();
+  const text=root.getPropertyValue('--text').trim();
+  const border=root.getPropertyValue('--border').trim();
+
+  const colors=values.map((v,i)=>{
+    const h=parseInt(labels[i].split(':')[0]);
+    const m=parseInt((labels[i].split(':')[1]||'0'));
+    const z=getG12Zone(h,m);
+    if(z.cls==='cheap')return 'rgba(30,124,58,0.7)';
+    return 'rgba(192,57,43,0.7)';
+  });
+
+  if(chart){chart.destroy();}
+  chart=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'RCE (zł/kWh)',
+        data:values,
+        backgroundColor:colors,
+        borderRadius:2,
+        borderSkipped:false,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            label:ctx=>`${ctx.parsed.y.toFixed(4)} zł/kWh (${(ctx.parsed.y*1000).toFixed(0)} PLN/MWh)`,
+            afterLabel:ctx=>{
+              const h=parseInt(ctx.label.split(':')[0]);
+              return getG12Zone(h).label;
+            }
+          }
+        }
+      },
+      scales:{
+        x:{ticks:{maxTicksLimit:12,color:text,font:{size:10}},grid:{color:border}},
+        y:{ticks:{color:text,font:{size:10},callback:v=>`${v.toFixed(3)}`},grid:{color:border}}
+      },
+      animation:{duration:400}
+    }
+  });
+}
+
+// ── PSE API ──
+async function loadData(){
+  const statusBar=document.getElementById('statusBar');
+  statusBar.className='status-bar loading';
+  statusBar.innerHTML='<div class="dot"></div><span>Pobieranie danych z API PSE…</span>';
+
+  const now=new Date();
+  const today=now.toISOString().slice(0,10);
+  document.getElementById('dateBadge').textContent=today;
+  document.getElementById('tableDate').textContent=today;
+
+  const url=`https://api.raporty.pse.pl/api/rce-pln?$filter=business_date eq '${today}'&$orderby=dtime asc`;
+
+  try{
+    const resp=await fetch(url);
+    if(!resp.ok)throw new Error(`HTTP ${resp.status}`);
+    const data=await resp.json();
+    const records=data.value||[];
+    if(!records.length)throw new Error('Brak danych na dziś');
+
+    // Process
+    const kwh=records.map(r=>r.rce_pln/1000);
+    const labels=records.map(r=>r.period.slice(0,5));
+    const min=Math.min(...kwh),max=Math.max(...kwh),avg=kwh.reduce((a,b)=>a+b,0)/kwh.length;
+
+    // Find current period
+    const hNow=now.getHours(),mNow=now.getMinutes();
+    let nowIdx=records.findIndex(r=>{
+      const [hh,mm]=r.period.slice(0,5).split(':').map(Number);
+      return hh>hNow||(hh===hNow&&mm>mNow);
+    });
+    if(nowIdx<1)nowIdx=records.length-1;
+    else nowIdx--;
+
+    const curVal=kwh[nowIdx]||kwh[kwh.length-1];
+    const curPeriod=records[nowIdx]?.period||'—';
+    const curZone=getG12Zone(parseInt(curPeriod.split(':')[0]));
+
+    // KPIs
+    const minIdx=kwh.indexOf(min),maxIdx=kwh.indexOf(max);
+    setKPI('kpiCurrent',curVal.toFixed(4),curPeriod,curZone.cls);
+    setKPI('kpiMin',min.toFixed(4),records[minIdx]?.period||'—','cheap');
+    setKPI('kpiMax',max.toFixed(4),records[maxIdx]?.period||'—','expensive');
+    setKPI('kpiAvg',avg.toFixed(4),'średnia','');
+
+    // Current zone banner
+    const zoneEl=document.getElementById('currentZone');
+    zoneEl.style.display='flex';
+    zoneEl.className='current-zone '+curZone.cls;
+    document.getElementById('currentZoneText').textContent=
+      `G12 – teraz: ${curZone.label} | ${curVal.toFixed(4)} zł/kWh | ${(curVal*1000).toFixed(0)} PLN/MWh`;
+
+    // Chart
+    renderChart(labels,kwh,nowIdx);
+
+    // Table
+    const tbody=document.getElementById('hourlyBody');
+    tbody.innerHTML=records.map((r,i)=>{
+      const v=kwh[i];
+      const h=parseInt(r.period.split(':')[0]);
+      const z=getG12Zone(h);
+      const rowCls=i===nowIdx?'row-now '+(z.cls==='cheap'?'row-cheap':'row-exp'):(z.cls==='cheap'?'row-cheap':'row-exp');
+      return`<tr class="${rowCls}"><td>${r.period}${i===nowIdx?' ◀':''}</td><td>${r.rce_pln.toFixed(2)}</td><td>${v.toFixed(4)}</td><td>${z.cls==='cheap'?'🟢 tania':'🔴 droga'}</td></tr>`;
+    }).join('');
+
+    // Status OK
+    statusBar.className='status-bar ok';
+    statusBar.innerHTML=`<div class="dot static"></div><span>Dane z API PSE – ${records.length} rekordów, ostatnia aktualizacja: ${new Date().toLocaleTimeString('pl-PL')}</span>`;
+
+  }catch(e){
+    statusBar.className='status-bar err';
+    statusBar.innerHTML=`<div class="dot static"></div><span>Błąd: ${e.message}. Sprawdź połączenie z internet.</span>`;
+    console.error(e);
+  }
+}
+
+function setKPI(id,val,sub,cls){
+  const el=document.getElementById(id);
+  el.className='kpi'+(cls?' '+cls:'');
+  el.querySelector('.kpi-value').innerHTML=`${val}<span class="kpi-unit">zł/kWh</span>`;
+  el.querySelector('.kpi-sub').textContent=sub;
+}
+
+// ── Init ──
+renderTaryfy();
+loadData();
+// Auto-refresh co 5 minut
+setInterval(loadData, 5*60*1000);
+</script>
+</body>
+</html>

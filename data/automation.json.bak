@@ -1,0 +1,231 @@
+{
+  "nodes": {
+    "weather-1": {
+      "id": "weather-1",
+      "type": "weather",
+      "name": "Pogoda Lokalna",
+      "config": {
+        "par": "f_1_clouds",
+        "op": "lt",
+        "threshold": "1"
+      },
+      "lastUpdate": 1780183723221,
+      "data": {
+        "temp": 13.57,
+        "humidity": 96,
+        "clouds": 2,
+        "isSunny": true,
+        "f_0_temp": 18.31,
+        "f_0_clouds": 100,
+        "f_0_isSunny": false,
+        "f_1_temp": 14.79,
+        "f_1_clouds": 100,
+        "f_1_isSunny": false,
+        "f_2_temp": 20.39,
+        "f_2_clouds": 55,
+        "f_2_isSunny": false,
+        "f_3_temp": 22.01,
+        "f_3_clouds": 100,
+        "f_3_isSunny": false,
+        "labels": {
+          "temp": "Temperatura",
+          "humidity": "Wilgotność (%)",
+          "clouds": "Zachmurzenie (%)",
+          "isSunny": "Czy Słonecznie",
+          "f_0_temp": "Dziś - Temp",
+          "f_0_clouds": "Dziś - Chmury",
+          "f_0_isSunny": "Dziś - Słonecznie",
+          "f_1_temp": "Jutro - Temp",
+          "f_1_clouds": "Jutro - Chmury",
+          "f_1_isSunny": "Jutro - Słonecznie",
+          "f_2_temp": "Pojutrze (2) - Temp",
+          "f_2_clouds": "Pojutrze (2) - Chmury",
+          "f_2_isSunny": "Pojutrze (2) - Słonecznie",
+          "f_3_temp": "Pojutrze (3) - Temp",
+          "f_3_clouds": "Pojutrze (3) - Chmury",
+          "f_3_isSunny": "Pojutrze (3) - Słonecznie"
+        },
+        "forecast": [
+          {
+            "dt": 1780218000,
+            "temp": 18.31,
+            "clouds": 100,
+            "description": "light rain",
+            "icon": "10d",
+            "isSunny": false
+          },
+          {
+            "dt": 1780304400,
+            "temp": 14.79,
+            "clouds": 100,
+            "description": "light rain",
+            "icon": "10d",
+            "isSunny": false
+          },
+          {
+            "dt": 1780390800,
+            "temp": 20.39,
+            "clouds": 55,
+            "description": "broken clouds",
+            "icon": "04d",
+            "isSunny": false
+          },
+          {
+            "dt": 1780477200,
+            "temp": 22.01,
+            "clouds": 100,
+            "description": "light rain",
+            "icon": "10d",
+            "isSunny": false
+          }
+        ]
+      },
+      "x": 62,
+      "y": 178,
+      "lastVal": "100 -> FALSE"
+    },
+    "action-mpp9498p": {
+      "id": "action-mpp9498p",
+      "type": "action",
+      "name": "Konsola Debug",
+      "config": {
+        "source": "device"
+      },
+      "data": {
+        "log": "FALSE"
+      },
+      "x": 314,
+      "y": 180,
+      "lastVal": "FALSE"
+    },
+    "inverter-mpqrxg9q": {
+      "id": "inverter-mpqrxg9q",
+      "type": "inverter",
+      "name": "Inwerter",
+      "config": {
+        "par": "solar_pv_power",
+        "op": "lt",
+        "threshold": "30"
+      },
+      "data": {
+        "solar_pv_power": "0",
+        "battery_real_level": "NaN",
+        "load_active_power": "0.1490",
+        "bt_battery_capacity": "36.0000",
+        "battery_active_power": "-0.1480",
+        "pv_output_power": "0",
+        "grid_active_power": "0.0000",
+        "gd_eybond_read_15": "0.0",
+        "gd_eybond_read_16": "0.00",
+        "gd_grid_active_power": "0",
+        "gd_eybond_read_45": "0.0",
+        "sy_eybond_read_14": "Off-Grid Mode",
+        "sy_eybond_read_38": "23",
+        "sy_eybond_read_39": "27",
+        "sy_eybond_read_49": "SBU",
+        "sy_eybond_read_75": "PV priority",
+        "pv_eybond_read_32": "22.0",
+        "pv_eybond_read_33": "0.0",
+        "pv_eybond_read_46": "0.0",
+        "bt_eybond_read_28": "52.9",
+        "bt_eybond_read_29": "-2.8",
+        "bc_eybond_read_23": "230.0",
+        "bc_eybond_read_24": "1.0",
+        "bc_eybond_read_25": "50.00",
+        "bc_load_active_power": "149",
+        "bc_eybond_read_27": "230",
+        "bc_eybond_read_37": "3",
+        "battery_soc": 36,
+        "labels": {
+          "gd_eybond_read_15": "Grid Voltage",
+          "gd_eybond_read_16": "Grid Frequency",
+          "gd_grid_active_power": "Grid Power",
+          "gd_eybond_read_45": "AC charging current",
+          "sy_eybond_read_14": "Operating mode",
+          "sy_eybond_read_38": "DC Module Termperature",
+          "sy_eybond_read_39": "INV Module Termperature",
+          "sy_eybond_read_49": "Output priority",
+          "sy_eybond_read_75": "Charger Source Priority",
+          "pv_eybond_read_32": "PV Voltage",
+          "pv_eybond_read_33": "PV Current",
+          "pv_output_power": "PV Power",
+          "pv_eybond_read_46": "PV charging current",
+          "bt_eybond_read_28": "Battery Voltage",
+          "bt_eybond_read_29": "Battery Current",
+          "bc_eybond_read_23": "Output Voltage",
+          "bc_eybond_read_24": "Output Current",
+          "bc_eybond_read_25": "Output frequency",
+          "bc_load_active_power": "Output Active Power",
+          "bc_eybond_read_27": "Output Apparent Power",
+          "bc_eybond_read_37": "Load Percent"
+        }
+      },
+      "x": 59,
+      "y": 32,
+      "lastVal": "0 -> TRUE",
+      "lastUpdate": 1780183724178
+    },
+    "tuya-mpsz1jtu": {
+      "id": "tuya-mpsz1jtu",
+      "type": "tuya",
+      "name": "Tuya",
+      "config": {},
+      "data": {},
+      "x": 316,
+      "y": 32,
+      "lastVal": "---"
+    },
+    "action-mpsz6z46": {
+      "id": "action-mpsz6z46",
+      "type": "action",
+      "name": "Konsola",
+      "config": {},
+      "data": {
+        "log": "IDLE (NO LINK)"
+      },
+      "x": 591,
+      "y": 22,
+      "lastVal": "---"
+    },
+    "tuya-mpsz7zlq": {
+      "id": "tuya-mpsz7zlq",
+      "type": "tuya",
+      "name": "Urządzenie Tuya",
+      "config": {},
+      "data": {},
+      "x": 660,
+      "y": 198,
+      "lastVal": "---"
+    }
+  },
+  "links": [
+    {
+      "id": "link-1779958430350",
+      "fromNode": "weather-1",
+      "toNode": "action-mpp9498p"
+    },
+    {
+      "id": "link-1780050280051",
+      "fromNode": "inverter-mpqrxg9q",
+      "toNode": "action-mpqrypn0"
+    },
+    {
+      "id": "link-1780134332193",
+      "fromNode": "weather-1",
+      "toNode": "action-mpqrypn0"
+    }
+  ],
+  "settings": {
+    "weather": {
+      "apiKey": "5d652f0bff80d46c6a9ce422c48e4296",
+      "lat": "49.88087",
+      "lon": "19.56303"
+    },
+    "tuya": {
+      "apiKey": "9hgdry737gysk4khx4de",
+      "apiSecret": "3fe51f587fda4fdbb65d0767eca9fa9e",
+      "region": "eu"
+    }
+  },
+  "tuya_devices": {}
+}

@@ -50,3 +50,6 @@ src/prisma/prisma-class/*
 /keys
 
 *.keystore.json
+.aider*
+/tuya/node_modules
+/frontend/node_modules

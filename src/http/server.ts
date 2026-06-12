@@ -6,8 +6,15 @@ import chokidar from 'chokidar';
 
 export const server = Fastify({ logger: false });
 
+const frontendDist = path.join(process.cwd(), 'frontend', 'dist');
+const publicDir = path.join(process.cwd(), 'public');
+const hasSvelteBuild = fs.existsSync(frontendDist);
+
+const indexPath = hasSvelteBuild
+  ? path.join(frontendDist, 'index.html')
+  : path.join(publicDir, 'index.html');
+
 let indexETag = Date.now().toString();
-const indexPath = path.join(__dirname, '../../public/index.html');
 
 chokidar.watch(indexPath).on('change', () => {
   indexETag = Date.now().toString();
@@ -18,7 +25,13 @@ server.get('/version', async (request, reply) => {
   reply.send({ version: indexETag });
 });
 
+// Serve static files from Svelte build (or public/ as fallback)
 server.register(fastifyStatic, {
-  root: path.join(__dirname, '../../public'),
+  root: hasSvelteBuild ? frontendDist : publicDir,
   prefix: '/',
+});
+
+// SPA fallback — serve index.html for any unmatched route
+server.setNotFoundHandler((request, reply) => {
+  reply.type('text/html').send(fs.readFileSync(indexPath));
 });

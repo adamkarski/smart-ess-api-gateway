@@ -1,0 +1,223 @@
+{
+  "lastSync": "Tue Jun  2 18:40:37 2026",
+  "devices": [
+    {
+      "active_time": 1780167138,
+      "biz_type": 0,
+      "category": "tdq",
+      "create_time": 1754307337,
+      "icon": "smart/icon/ay1573546958261faWcj/09227d92c014f30eb11e0d5a3f7812a6.png",
+      "id": "bf1edb954ab9cd240ezcth",
+      "ip": null,
+      "lat": "49.88",
+      "local_key": "esmufnYkW4MxAR<U",
+      "lon": "19.56",
+      "model": "",
+      "name": "Motion Sensor",
+      "online": true,
+      "owner_id": "287571246",
+      "product_id": "gk0d4i8g5akryd9d",
+      "product_name": "001P02CB3S",
+      "sub": false,
+      "time_zone": "+02:00",
+      "uid": "eu1777842626103oLiwQ",
+      "update_time": 1780417973,
+      "uuid": "54ea68a3297f2255",
+      "category_name": "Breaker",
+      "gateway_id": ""
+    },
+    {
+      "active_time": 1778697543,
+      "biz_type": 0,
+      "category": "tdq",
+      "create_time": 1775420096,
+      "icon": "smart/icon/ay1573546958261faWcj/bc094eaf43f3ea7ba12dfc9b92dbf397.png",
+      "id": "bfc53dee2685cf9ca2or8v",
+      "ip": null,
+      "lat": "",
+      "local_key": "ixeX(izHji[(=OxY",
+      "lon": "",
+      "model": "",
+      "name": "CWU zbiornik",
+      "online": true,
+      "owner_id": "287571246",
+      "product_id": "jc1afi7ow32okd0h",
+      "product_name": "001T03Pro_T1-3S",
+      "sub": false,
+      "time_zone": "+02:00",
+      "uid": "eu1777842626103oLiwQ",
+      "update_time": 1780413851,
+      "uuid": "cae89dfc70c813ef",
+      "category_name": "Breaker",
+      "gateway_id": ""
+    },
+    {
+      "active_time": 1778697487,
+      "biz_type": 0,
+      "category": "tdq",
+      "create_time": 1773308686,
+      "icon": "smart/icon/ay1514166115504M4mB5/a0129b47f51df4301e6646571d9d31f7.png",
+      "id": "bf8beef772cee0beb5aegc",
+      "ip": "192.168.8.82",
+      "lat": "49.88",
+      "local_key": "A[*?;T{y~0N#sZ+c",
+      "lon": "19.56",
+      "model": "",
+      "name": "CWU piwnica 2x",
+      "online": true,
+      "owner_id": "287571246",
+      "product_id": "l0haolo9qa8rn8t0",
+      "product_name": "s180v3.1",
+      "status": [
+        {
+          "code": "switch_1",
+          "value": true
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "relay_status",
+          "value": "2"
+        },
+        {
+          "code": "light_mode",
+          "value": "relay"
+        },
+        {
+          "code": "cycle_time",
+          "value": ""
+        },
+        {
+          "code": "random_time",
+          "value": ""
+        },
+        {
+          "code": "switch_inching",
+          "value": "AAAC"
+        },
+        {
+          "code": "switch_type",
+          "value": "flip"
+        }
+      ],
+      "sub": false,
+      "time_zone": "+02:00",
+      "uid": "eu1777842626103oLiwQ",
+      "update_time": 1780407700,
+      "uuid": "3ff71139d97de498",
+      "category_name": "Breaker",
+      "gateway_id": "",
+      "version": "3.5"
+    },
+    {
+      "active_time": 1778697790,
+      "biz_type": 0,
+      "category": "dlq",
+      "create_time": 1758796771,
+      "icon": "smart/icon/bay15871133488653eun/e3f7e9660cf5b087f12196e2f8cf01fe.png",
+      "id": "bfd64877960d2e26e7aqlj",
+      "ip": "192.168.8.19",
+      "lat": "49.88",
+      "local_key": "AZ@}+/b1?wmH~k;o",
+      "lon": "19.56",
+      "model": "DPN\u65ad\u8def\u5668",
+      "name": "TAURON",
+      "online": true,
+      "owner_id": "287571246",
+      "product_id": "dmtrpqibupjoxiq4",
+      "product_name": "WiFi-\u8ba1\u91cfDPN\u65ad\u8def\u5668",
+      "status": [
+        {
+          "code": "switch",
+          "value": false
+        },
+        {
+          "code": "countdown_1",
+          "value": 0
+        },
+        {
+          "code": "add_ele",
+          "value": 1
+        },
+        {
+          "code": "cur_current",
+          "value": 0
+        },
+        {
+          "code": "cur_power",
+          "value": 0
+        },
+        {
+          "code": "cur_voltage",
+          "value": 2423
+        },
+        {
+          "code": "test_bit",
+          "value": 2
+        },
+        {
+          "code": "voltage_coe",
+          "value": 0
+        },
+        {
+          "code": "electric_coe",
+          "value": 0
+        },
+        {
+          "code": "power_coe",
+          "value": 0
+        },
+        {
+          "code": "electricity_coe",
+          "value": 0
+        },
+        {
+          "code": "fault",
+          "value": 0
+        },
+        {
+          "code": "relay_status",
+          "value": "power_off"
+        },
+        {
+          "code": "light_mode",
+          "value": "relay"
+        },
+        {
+          "code": "child_lock",
+          "value": false
+        },
+        {
+          "code": "cycle_time",
+          "value": ""
+        },
+        {
+          "code": "temp_value",
+          "value": 28
+        },
+        {
+          "code": "alarm_set_1",
+          "value": "BQEAKAcAAAA="
+        },
+        {
+          "code": "alarm_set_2",
+          "value": "AQAAMgMAAQkEAABa"
+        },
+        {
+          "code": "online_state",
+          "value": "online"
+        }
+      ],
+      "sub": false,
+      "time_zone": "+02:00",
+      "uid": "eu1777842626103oLiwQ",
+      "update_time": 1780407500,
+      "uuid": "ff4181c03c26ec4b",
+      "category_name": "Circuit breaker",
+      "gateway_id": "",
+      "version": "3.4"
+    }
+  ]
+}

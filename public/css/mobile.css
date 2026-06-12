@@ -1,0 +1,692 @@
+@media screen and (max-width: 768px) {
+
+/* ===== RESET ===== */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  background: #f2f2f7;
+  color: #1c1c1e;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== TOP NAV → iOS Status Bar Style ===== */
+nav.sticky {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 54px;
+  background: rgba(255,255,255,0.88) !important;
+  backdrop-filter: saturate(180%) blur(20px) !important;
+  -webkit-backdrop-filter: saturate(180%) blur(20px) !important;
+  border-bottom: 0.5px solid rgba(0,0,0,0.12) !important;
+  z-index: 100;
+  padding: 0 16px !important;
+}
+
+nav.sticky > div {
+  max-width: 100% !important;
+  padding: 0 !important;
+  height: 54px !important;
+}
+
+nav.sticky .flex.items-center.gap-2 i {
+  font-size: 20px;
+  color: #007aff !important;
+}
+
+nav.sticky .flex.items-center.gap-2 span {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.3px !important;
+  color: #1c1c1e !important;
+}
+
+nav.sticky .flex.items-center.gap-2 span .text-teal-500 {
+  color: #007aff !important;
+}
+
+/* Hide top nav tabs on mobile */
+nav.sticky .flex.gap-6 {
+  display: none !important;
+}
+
+#status-dot {
+  margin-left: auto;
+}
+
+/* ===== BOTTOM TAB BAR (iOS style) ===== */
+#mobile-tab-bar {
+  display: flex !important;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 85px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-top: 0.5px solid rgba(0,0,0,0.12);
+  z-index: 100;
+  padding: 8px 0 env(safe-area-inset-bottom, 8px) 0;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+
+.mobile-tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2px;
+  flex: 1;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  transition: opacity 0.15s;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.mobile-tab-item i {
+  font-size: 23px;
+  color: #8e8e93;
+  transition: color 0.15s;
+}
+
+.mobile-tab-item span {
+  font-size: 10px;
+  font-weight: 500;
+  color: #8e8e93;
+  letter-spacing: 0;
+  transition: color 0.15s;
+}
+
+.mobile-tab-item.active i,
+.mobile-tab-item.active span {
+  color: #007aff;
+}
+
+.mobile-tab-item.active span {
+  font-weight: 600;
+}
+
+/* ===== MAIN CONTENT ===== */
+main.max-w-\[1400px\] {
+  max-width: 100% !important;
+  padding: 62px 0 0 0 !important;
+  margin: 0 !important;
+}
+
+main.max-w-\[1400px\] > .space-y-6 {
+  padding: 0;
+}
+
+.tab-content {
+  padding: 8px 16px 100px 16px;
+}
+
+/* ===== DASHBOARD CARDS (iOS-style) ===== */
+#tab-dashboard .grid.grid-cols-1.md\:grid-cols-4 {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+#tab-dashboard .grid.grid-cols-1.md\:grid-cols-4 > div {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+#tab-dashboard .rounded-3xl {
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04) !important;
+  padding: 20px 16px !important;
+}
+
+#tab-dashboard .rounded-3xl h3 {
+  font-size: 11px !important;
+  color: #8e8e93 !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 12px !important;
+  font-weight: 700 !important;
+}
+
+/* Battery circle */
+#tab-dashboard .w-44.h-44 {
+  width: 160px !important;
+  height: 160px !important;
+}
+
+#tab-dashboard .text-6xl {
+  font-size: 42px !important;
+  line-height: 1 !important;
+  color: #1c1c1e !important;
+  font-weight: 700 !important;
+}
+
+#tab-dashboard .text-5xl {
+  font-size: 36px !important;
+  line-height: 1 !important;
+  color: #1c1c1e !important;
+  font-weight: 700 !important;
+}
+
+#tab-dashboard .text-2xl {
+  font-size: 22px !important;
+  line-height: 1.1 !important;
+  color: #1c1c1e !important;
+  font-weight: 700 !important;
+}
+
+#tab-dashboard .text-xl {
+  font-size: 18px !important;
+  line-height: 1.1 !important;
+  color: #1c1c1e !important;
+}
+
+#tab-dashboard .text-lg {
+  font-size: 17px !important;
+  line-height: 1.1 !important;
+  color: #1c1c1e !important;
+}
+
+.unit-text {
+  color: #8e8e93 !important;
+  font-size: 0.7em !important;
+  margin-left: 1px !important;
+}
+
+.lcd-text {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace !important;
+  letter-spacing: 0 !important;
+}
+
+/* Battery card - net balance */
+#tab-dashboard .border-t.border-slate-800 {
+  border-top-color: rgba(0,0,0,0.06) !important;
+  margin-top: 10px !important;
+  padding-top: 10px !important;
+}
+
+#tab-dashboard .bg-black\/40 {
+  background-color: rgba(0,0,0,0.08) !important;
+}
+
+/* Chart section */
+#tab-dashboard .lg\:col-span-4 > .rounded-3xl {
+  background: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04) !important;
+}
+
+#tab-dashboard .lg\:col-span-4 h3 {
+  font-size: 11px !important;
+  color: #8e8e93 !important;
+}
+
+#tab-dashboard .text-slate-400 {
+  color: #8e8e93 !important;
+}
+
+#tab-dashboard .text-slate-500 {
+  color: #8e8e93 !important;
+}
+
+#tab-dashboard .text-slate-600 {
+  color: #aeaeb2 !important;
+}
+
+#tab-dashboard .text-white {
+  color: #1c1c1e !important;
+}
+
+#tab-dashboard .text-teal-400 {
+  color: #34c759 !important;
+}
+
+#tab-dashboard .text-orange-400 {
+  color: #ff9500 !important;
+}
+
+#tab-dashboard .text-blue-400 {
+  color: #007aff !important;
+}
+
+#tab-dashboard .text-teal-500 {
+  color: #34c759 !important;
+}
+
+#tab-dashboard .text-purple-500 {
+  color: #af52de !important;
+}
+
+#tab-dashboard .bg-teal-500 {
+  background: #34c759 !important;
+}
+
+/* Ring colors */
+#tab-dashboard .text-teal-500.stroke-current {
+  stroke: #34c759 !important;
+}
+
+#tab-dashboard .text-blue-500.stroke-current {
+  stroke: #007aff !important;
+}
+
+#tab-dashboard .text-orange-500.stroke-current {
+  stroke: #ff9500 !important;
+}
+
+#tab-dashboard .text-purple-500.stroke-current {
+  stroke: #af52de !important;
+}
+
+/* Forecast grid */
+#forecast-container {
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px !important;
+}
+
+#forecast-container > div {
+  background: #f2f2f7 !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  border: none !important;
+}
+
+/* Status bar grid */
+#tab-dashboard .md\:grid-cols-5 {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 0 !important;
+}
+
+#tab-dashboard .md\:grid-cols-5 > div {
+  padding: 10px 8px !important;
+}
+
+#tab-dashboard .md\:grid-cols-5 .border-r.border-slate-800,
+#tab-dashboard .md\:grid-cols-5 .border-l.border-slate-800 {
+  border-color: rgba(0,0,0,0.06) !important;
+}
+
+/* Voltage details */
+#tab-dashboard .md\:grid-cols-3 {
+  grid-template-columns: 1fr !important;
+}
+
+#tab-dashboard .md\:grid-cols-3 > div {
+  padding: 12px 16px !important;
+}
+
+/* ===== BUTTONS ===== */
+button, .tab-btn {
+  min-height: 44px;
+}
+
+.bg-teal-600 {
+  background: #007aff !important;
+}
+
+.bg-teal-600:hover {
+  background: #0066d6 !important;
+}
+
+.bg-blue-600 {
+  background: #007aff !important;
+}
+
+.bg-slate-800,
+.bg-slate-900 {
+  background: #f2f2f7 !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+.text-slate-200 {
+  color: #1c1c1e !important;
+}
+
+.text-slate-300 {
+  color: #3a3a3c !important;
+}
+
+.text-slate-500 {
+  color: #8e8e93 !important;
+}
+
+.border-slate-800 {
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+/* ===== FLOW TAB ===== */
+#tab-flow {
+  margin-top: 0;
+}
+
+#tab-flow .max-w-\[1400px\] {
+  max-width: 100% !important;
+  padding: 0 16px !important;
+}
+
+#tab-flow .rounded-3xl {
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+  border: none !important;
+  padding: 12px !important;
+}
+
+#tab-flow .rounded-3xl h2 {
+  font-size: 13px !important;
+  color: #1c1c1e !important;
+}
+
+#tab-flow .rounded-3xl p {
+  display: none !important;
+}
+
+#tab-flow .flex.gap-3 {
+  gap: 6px !important;
+}
+
+#tab-flow .flex.gap-3 button {
+  min-height: 36px !important;
+  font-size: 9px !important;
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+}
+
+#automation-canvas {
+  min-height: 400px !important;
+  background-image: radial-gradient(circle, #e5e5ea 1px, transparent 1px) !important;
+  background-size: 20px 20px !important;
+}
+
+.node {
+  background: rgba(255,255,255,0.96) !important;
+  border: 0.5px solid rgba(0,0,0,0.1) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
+  width: 140px !important;
+  padding: 10px !important;
+}
+
+.node .text-white {
+  color: #1c1c1e !important;
+}
+
+.node .text-slate-400 {
+  color: #8e8e93 !important;
+}
+
+.socket {
+  background: #e5e5ea !important;
+  border-color: #8e8e93 !important;
+}
+
+.socket:hover {
+  background: #007aff !important;
+  border-color: #007aff !important;
+}
+
+.flow-line {
+  stroke: rgba(0,122,255,0.3) !important;
+}
+
+/* ===== DEVICES TAB ===== */
+#tab-devices .rounded-3xl {
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+}
+
+#tab-devices .rounded-3xl h2 {
+  font-size: 13px !important;
+  color: #1c1c1e !important;
+}
+
+#tab-devices .rounded-3xl p {
+  display: none !important;
+}
+
+#tuya-device-list {
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+}
+
+#tuya-device-list > div {
+  background: #ffffff !important;
+  border: none !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+  padding: 16px !important;
+}
+
+#tuya-device-list .text-white {
+  color: #1c1c1e !important;
+}
+
+#tuya-device-list .text-slate-500 {
+  color: #8e8e93 !important;
+}
+
+#tuya-device-list .bg-slate-900 {
+  background: #f2f2f7 !important;
+}
+
+#tuya-device-list .border-slate-800 {
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+/* ===== SETUP TAB ===== */
+#tab-setup .rounded-3xl {
+  border-radius: 14px !important;
+  background: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+}
+
+#tab-setup .rounded-3xl h2 {
+  font-size: 13px !important;
+  color: #1c1c1e !important;
+}
+
+#tab-setup .text-white {
+  color: #1c1c1e !important;
+}
+
+#tab-setup .text-slate-500 {
+  color: #8e8e93 !important;
+}
+
+#settings-list {
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+}
+
+#settings-list > div {
+  background: #f2f2f7 !important;
+  border: none !important;
+  border-radius: 14px !important;
+  padding: 16px !important;
+}
+
+#settings-list .bg-slate-950\/40 {
+  background: #f2f2f7 !important;
+}
+
+#settings-list .bg-slate-900 {
+  background: #ffffff !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: #1c1c1e !important;
+}
+
+#settings-list .text-slate-600 {
+  color: #aeaeb2 !important;
+}
+
+#settings-list .text-slate-700 {
+  color: #8e8e93 !important;
+}
+
+#settings-list .border-white\/5 {
+  border-color: rgba(0,0,0,0.06) !important;
+}
+
+/* ===== MODAL / EDIT OVERLAY ===== */
+#node-edit-overlay {
+  top: 0 !important;
+}
+
+#node-edit-panel {
+  background: rgba(255,255,255,0.98) !important;
+}
+
+#node-edit-panel .text-teal-400 {
+  color: #007aff !important;
+}
+
+#node-edit-panel .text-slate-500 {
+  color: #8e8e93 !important;
+}
+
+#edit-content {
+  background: #ffffff !important;
+}
+
+#node-edit-backdrop {
+  background: rgba(0,0,0,0.4) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+/* ===== CONFIRM DIALOG ===== */
+#confirm-dialog {
+  background: rgba(255,255,255,0.98) !important;
+  backdrop-filter: saturate(180%) blur(20px) !important;
+  border: none !important;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.15) !important;
+}
+
+#confirm-dialog .text-slate-300 {
+  color: #1c1c1e !important;
+}
+
+#confirm-cancel {
+  background: #f2f2f7 !important;
+  color: #007aff !important;
+}
+
+#confirm-ok {
+  background: #ff3b30 !important;
+}
+
+/* ===== ADD NODE MENU ===== */
+#add-node-menu {
+  background: rgba(255,255,255,0.98) !important;
+  border: none !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12) !important;
+  width: calc(100% - 32px) !important;
+  max-width: 360px !important;
+  padding: 20px !important;
+}
+
+#add-node-menu h3 {
+  color: #007aff !important;
+}
+
+#add-node-menu button:not(:last-child) {
+  background: #f2f2f7 !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 12px 8px !important;
+}
+
+#add-node-menu button:not(:last-child) span {
+  color: #1c1c1e !important;
+}
+
+/* ===== CONTEXT MENU ===== */
+#node-context-menu {
+  background: rgba(255,255,255,0.98) !important;
+  backdrop-filter: saturate(180%) blur(20px) !important;
+  border: 0.5px solid rgba(0,0,0,0.1) !important;
+  border-radius: 14px !important;
+  min-width: 180px !important;
+}
+
+#node-context-menu button {
+  color: #007aff !important;
+}
+
+#node-context-menu button:hover {
+  background: rgba(0,122,255,0.08) !important;
+}
+
+#node-context-menu .text-red-400,
+#node-context-menu #context-delete,
+#node-context-menu #context-delete-link {
+  color: #ff3b30 !important;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  display: none !important;
+}
+
+/* ===== DETAILS/SETTINGS SELECTS & INPUTS ===== */
+select, input, .rounded-xl {
+  border-radius: 12px !important;
+}
+
+select option {
+  color: #1c1c1e;
+}
+
+/* ===== OVERRIDE DARK BG ELEMENTS ===== */
+.bg-dashboard-dark\/90,
+.bg-dashboard-dark\/95,
+.bg-dashboard-card {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+.bg-dashboard-dark {
+  background: transparent !important;
+}
+
+.glass {
+  backdrop-filter: none !important;
+  background: none !important;
+}
+
+/* ===== ERROR TOAST ===== */
+#error-toast {
+  background: #ff3b30 !important;
+  border-radius: 14px !important;
+  left: 16px !important;
+  right: 16px !important;
+  top: 66px !important;
+  width: auto !important;
+  text-align: center !important;
+}
+
+/* ===== TIME ===== */
+#last-sync-time {
+  color: #aeaeb2 !important;
+}
+
+/* ===== PROGRESS RINGS ===== */
+.circle-progress circle.text-slate-900 {
+  stroke: #f2f2f7 !important;
+}
+
+}

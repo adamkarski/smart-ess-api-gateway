@@ -1,0 +1,1067 @@
+{
+  "nodes": {
+    "inv-soc_high": {
+      "id": "inv-soc_high",
+      "type": "inverter",
+      "name": "Soc High",
+      "config": {
+        "par": "battery_soc",
+        "op": "gt",
+        "threshold": "70"
+      },
+      "data": {
+        "solar_pv_power": "0",
+        "battery_real_level": "NaN",
+        "load_active_power": "0.2220",
+        "bt_battery_capacity": "34.0000",
+        "battery_active_power": "-0.2190",
+        "pv_output_power": "0",
+        "grid_active_power": "0.0000",
+        "gd_eybond_read_15": "0.0",
+        "gd_eybond_read_16": "0.00",
+        "gd_grid_active_power": "0",
+        "gd_eybond_read_45": "0.0",
+        "sy_eybond_read_14": "Off-Grid Mode",
+        "sy_eybond_read_38": "24",
+        "sy_eybond_read_39": "29",
+        "sy_eybond_read_49": "SBU",
+        "sy_eybond_read_75": "PV is at the same level as mains",
+        "pv_eybond_read_32": "21.6",
+        "pv_eybond_read_33": "0.0",
+        "pv_eybond_read_46": "0.0",
+        "bt_eybond_read_28": "52.3",
+        "bt_eybond_read_29": "-4.2",
+        "bc_eybond_read_23": "229.9",
+        "bc_eybond_read_24": "1.3",
+        "bc_eybond_read_25": "50.00",
+        "bc_load_active_power": "222",
+        "bc_eybond_read_27": "298",
+        "bc_eybond_read_37": "4",
+        "battery_soc": 34,
+        "labels": {
+          "gd_eybond_read_15": "Grid Voltage",
+          "gd_eybond_read_16": "Grid Frequency",
+          "gd_grid_active_power": "Grid Power",
+          "gd_eybond_read_45": "AC charging current",
+          "sy_eybond_read_14": "Operating mode",
+          "sy_eybond_read_38": "DC Module Termperature",
+          "sy_eybond_read_39": "INV Module Termperature",
+          "sy_eybond_read_49": "Output priority",
+          "sy_eybond_read_75": "Charger Source Priority",
+          "pv_eybond_read_32": "PV Voltage",
+          "pv_eybond_read_33": "PV Current",
+          "pv_output_power": "PV Power",
+          "pv_eybond_read_46": "PV charging current",
+          "bt_eybond_read_28": "Battery Voltage",
+          "bt_eybond_read_29": "Battery Current",
+          "bc_eybond_read_23": "Output Voltage",
+          "bc_eybond_read_24": "Output Current",
+          "bc_eybond_read_25": "Output frequency",
+          "bc_load_active_power": "Output Active Power",
+          "bc_eybond_read_27": "Output Apparent Power",
+          "bc_eybond_read_37": "Load Percent"
+        }
+      },
+      "lastVal": "34 -> FALSE",
+      "x": 60,
+      "y": -146,
+      "lastUpdate": 1780875489943,
+      "_z": 61
+    },
+    "inv-pv_power": {
+      "id": "inv-pv_power",
+      "type": "inverter",
+      "name": "Pv Power",
+      "config": {
+        "par": "pv_output_power",
+        "op": "gt",
+        "threshold": "300"
+      },
+      "data": {
+        "solar_pv_power": "0",
+        "battery_real_level": "NaN",
+        "load_active_power": "0.2220",
+        "bt_battery_capacity": "34.0000",
+        "battery_active_power": "-0.2190",
+        "pv_output_power": "0",
+        "grid_active_power": "0.0000",
+        "gd_eybond_read_15": "0.0",
+        "gd_eybond_read_16": "0.00",
+        "gd_grid_active_power": "0",
+        "gd_eybond_read_45": "0.0",
+        "sy_eybond_read_14": "Off-Grid Mode",
+        "sy_eybond_read_38": "24",
+        "sy_eybond_read_39": "29",
+        "sy_eybond_read_49": "SBU",
+        "sy_eybond_read_75": "PV is at the same level as mains",
+        "pv_eybond_read_32": "21.6",
+        "pv_eybond_read_33": "0.0",
+        "pv_eybond_read_46": "0.0",
+        "bt_eybond_read_28": "52.3",
+        "bt_eybond_read_29": "-4.2",
+        "bc_eybond_read_23": "229.9",
+        "bc_eybond_read_24": "1.3",
+        "bc_eybond_read_25": "50.00",
+        "bc_load_active_power": "222",
+        "bc_eybond_read_27": "298",
+        "bc_eybond_read_37": "4",
+        "battery_soc": 34,
+        "labels": {
+          "gd_eybond_read_15": "Grid Voltage",
+          "gd_eybond_read_16": "Grid Frequency",
+          "gd_grid_active_power": "Grid Power",
+          "gd_eybond_read_45": "AC charging current",
+          "sy_eybond_read_14": "Operating mode",
+          "sy_eybond_read_38": "DC Module Termperature",
+          "sy_eybond_read_39": "INV Module Termperature",
+          "sy_eybond_read_49": "Output priority",
+          "sy_eybond_read_75": "Charger Source Priority",
+          "pv_eybond_read_32": "PV Voltage",
+          "pv_eybond_read_33": "PV Current",
+          "pv_output_power": "PV Power",
+          "pv_eybond_read_46": "PV charging current",
+          "bt_eybond_read_28": "Battery Voltage",
+          "bt_eybond_read_29": "Battery Current",
+          "bc_eybond_read_23": "Output Voltage",
+          "bc_eybond_read_24": "Output Current",
+          "bc_eybond_read_25": "Output frequency",
+          "bc_load_active_power": "Output Active Power",
+          "bc_eybond_read_27": "Output Apparent Power",
+          "bc_eybond_read_37": "Load Percent"
+        }
+      },
+      "lastVal": "0 -> FALSE",
+      "x": 64.9998779296875,
+      "y": -17.77142333984375,
+      "lastUpdate": 1780875489943,
+      "_z": 119
+    },
+    "inv-night_low": {
+      "id": "inv-night_low",
+      "type": "inverter",
+      "name": "Night Low 30%",
+      "config": {
+        "par": "battery_soc",
+        "op": "lt",
+        "threshold": "30"
+      },
+      "data": {
+        "solar_pv_power": "0",
+        "battery_real_level": "NaN",
+        "load_active_power": "0.2220",
+        "bt_battery_capacity": "34.0000",
+        "battery_active_power": "-0.2190",
+        "pv_output_power": "0",
+        "grid_active_power": "0.0000",
+        "gd_eybond_read_15": "0.0",
+        "gd_eybond_read_16": "0.00",
+        "gd_grid_active_power": "0",
+        "gd_eybond_read_45": "0.0",
+        "sy_eybond_read_14": "Off-Grid Mode",
+        "sy_eybond_read_38": "24",
+        "sy_eybond_read_39": "29",
+        "sy_eybond_read_49": "SBU",
+        "sy_eybond_read_75": "PV is at the same level as mains",
+        "pv_eybond_read_32": "21.6",
+        "pv_eybond_read_33": "0.0",
+        "pv_eybond_read_46": "0.0",
+        "bt_eybond_read_28": "52.3",
+        "bt_eybond_read_29": "-4.2",
+        "bc_eybond_read_23": "229.9",
+        "bc_eybond_read_24": "1.3",
+        "bc_eybond_read_25": "50.00",
+        "bc_load_active_power": "222",
+        "bc_eybond_read_27": "298",
+        "bc_eybond_read_37": "4",
+        "battery_soc": 34,
+        "labels": {
+          "gd_eybond_read_15": "Grid Voltage",
+          "gd_eybond_read_16": "Grid Frequency",
+          "gd_grid_active_power": "Grid Power",
+          "gd_eybond_read_45": "AC charging current",
+          "sy_eybond_read_14": "Operating mode",
+          "sy_eybond_read_38": "DC Module Termperature",
+          "sy_eybond_read_39": "INV Module Termperature",
+          "sy_eybond_read_49": "Output priority",
+          "sy_eybond_read_75": "Charger Source Priority",
+          "pv_eybond_read_32": "PV Voltage",
+          "pv_eybond_read_33": "PV Current",
+          "pv_output_power": "PV Power",
+          "pv_eybond_read_46": "PV charging current",
+          "bt_eybond_read_28": "Battery Voltage",
+          "bt_eybond_read_29": "Battery Current",
+          "bc_eybond_read_23": "Output Voltage",
+          "bc_eybond_read_24": "Output Current",
+          "bc_eybond_read_25": "Output frequency",
+          "bc_load_active_power": "Output Active Power",
+          "bc_eybond_read_27": "Output Apparent Power",
+          "bc_eybond_read_37": "Load Percent"
+        }
+      },
+      "lastVal": "34 -> FALSE",
+      "x": 20,
+      "y": 305,
+      "lastUpdate": 1780875489943,
+      "_z": 55
+    },
+    "inv-afternoon_low": {
+      "id": "inv-afternoon_low",
+      "type": "inverter",
+      "name": "Afternoon Low",
+      "config": {
+        "par": "battery_soc",
+        "op": "lt",
+        "threshold": "30"
+      },
+      "data": {
+        "solar_pv_power": "0",
+        "battery_real_level": "NaN",
+        "load_active_power": "0.2220",
+        "bt_battery_capacity": "34.0000",
+        "battery_active_power": "-0.2190",
+        "pv_output_power": "0",
+        "grid_active_power": "0.0000",
+        "gd_eybond_read_15": "0.0",
+        "gd_eybond_read_16": "0.00",
+        "gd_grid_active_power": "0",
+        "gd_eybond_read_45": "0.0",
+        "sy_eybond_read_14": "Off-Grid Mode",
+        "sy_eybond_read_38": "24",
+        "sy_eybond_read_39": "29",
+        "sy_eybond_read_49": "SBU",
+        "sy_eybond_read_75": "PV is at the same level as mains",
+        "pv_eybond_read_32": "21.6",
+        "pv_eybond_read_33": "0.0",
+        "pv_eybond_read_46": "0.0",
+        "bt_eybond_read_28": "52.3",
+        "bt_eybond_read_29": "-4.2",
+        "bc_eybond_read_23": "229.9",
+        "bc_eybond_read_24": "1.3",
+        "bc_eybond_read_25": "50.00",
+        "bc_load_active_power": "222",
+        "bc_eybond_read_27": "298",
+        "bc_eybond_read_37": "4",
+        "battery_soc": 34,
+        "labels": {
+          "gd_eybond_read_15": "Grid Voltage",
+          "gd_eybond_read_16": "Grid Frequency",
+          "gd_grid_active_power": "Grid Power",
+          "gd_eybond_read_45": "AC charging current",
+          "sy_eybond_read_14": "Operating mode",
+          "sy_eybond_read_38": "DC Module Termperature",
+          "sy_eybond_read_39": "INV Module Termperature",
+          "sy_eybond_read_49": "Output priority",
+          "sy_eybond_read_75": "Charger Source Priority",
+          "pv_eybond_read_32": "PV Voltage",
+          "pv_eybond_read_33": "PV Current",
+          "pv_output_power": "PV Power",
+          "pv_eybond_read_46": "PV charging current",
+          "bt_eybond_read_28": "Battery Voltage",
+          "bt_eybond_read_29": "Battery Current",
+          "bc_eybond_read_23": "Output Voltage",
+          "bc_eybond_read_24": "Output Current",
+          "bc_eybond_read_25": "Output frequency",
+          "bc_load_active_power": "Output Active Power",
+          "bc_eybond_read_27": "Output Apparent Power",
+          "bc_eybond_read_37": "Load Percent"
+        }
+      },
+      "lastVal": "34 -> FALSE",
+      "x": 20,
+      "y": 460,
+      "lastUpdate": 1780875489943
+    },
+    "inv-emergency": {
+      "id": "inv-emergency",
+      "type": "inverter",
+      "name": "Emergency 20%",
+      "config": {
+        "par": "battery_soc",
+        "op": "lt",
+        "threshold": "20"
+      },
+      "data": {
+        "solar_pv_power": "0",
+        "battery_real_level": "NaN",
+        "load_active_power": "0.2220",
+        "bt_battery_capacity": "34.0000",
+        "battery_active_power": "-0.2190",
+        "pv_output_power": "0",
+        "grid_active_power": "0.0000",
+        "gd_eybond_read_15": "0.0",
+        "gd_eybond_read_16": "0.00",
+        "gd_grid_active_power": "0",
+        "gd_eybond_read_45": "0.0",
+        "sy_eybond_read_14": "Off-Grid Mode",
+        "sy_eybond_read_38": "24",
+        "sy_eybond_read_39": "29",
+        "sy_eybond_read_49": "SBU",
+        "sy_eybond_read_75": "PV is at the same level as mains",
+        "pv_eybond_read_32": "21.6",
+        "pv_eybond_read_33": "0.0",
+        "pv_eybond_read_46": "0.0",
+        "bt_eybond_read_28": "52.3",
+        "bt_eybond_read_29": "-4.2",
+        "bc_eybond_read_23": "229.9",
+        "bc_eybond_read_24": "1.3",
+        "bc_eybond_read_25": "50.00",
+        "bc_load_active_power": "222",
+        "bc_eybond_read_27": "298",
+        "bc_eybond_read_37": "4",
+        "battery_soc": 34,
+        "labels": {
+          "gd_eybond_read_15": "Grid Voltage",
+          "gd_eybond_read_16": "Grid Frequency",
+          "gd_grid_active_power": "Grid Power",
+          "gd_eybond_read_45": "AC charging current",
+          "sy_eybond_read_14": "Operating mode",
+          "sy_eybond_read_38": "DC Module Termperature",
+          "sy_eybond_read_39": "INV Module Termperature",
+          "sy_eybond_read_49": "Output priority",
+          "sy_eybond_read_75": "Charger Source Priority",
+          "pv_eybond_read_32": "PV Voltage",
+          "pv_eybond_read_33": "PV Current",
+          "pv_output_power": "PV Power",
+          "pv_eybond_read_46": "PV charging current",
+          "bt_eybond_read_28": "Battery Voltage",
+          "bt_eybond_read_29": "Battery Current",
+          "bc_eybond_read_23": "Output Voltage",
+          "bc_eybond_read_24": "Output Current",
+          "bc_eybond_read_25": "Output frequency",
+          "bc_load_active_power": "Output Active Power",
+          "bc_eybond_read_27": "Output Apparent Power",
+          "bc_eybond_read_37": "Load Percent"
+        }
+      },
+      "lastVal": "34 -> FALSE",
+      "x": 20,
+      "y": 610,
+      "lastUpdate": 1780875489943
+    },
+    "wth-today": {
+      "id": "wth-today",
+      "type": "weather",
+      "name": "PV Prognoza",
+      "config": {
+        "par": "expected_pv_today_peak",
+        "op": "gt",
+        "threshold": "700"
+      },
+      "data": {
+        "temp": 14.12,
+        "humidity": 92,
+        "clouds": 17,
+        "isSunny": true,
+        "f_0_temp": 21.81,
+        "f_0_clouds": 32,
+        "f_0_isSunny": false,
+        "f_1_temp": 24.63,
+        "f_1_clouds": 100,
+        "f_1_isSunny": false,
+        "f_2_temp": 12.79,
+        "f_2_clouds": 100,
+        "f_2_isSunny": false,
+        "f_3_temp": 15.31,
+        "f_3_clouds": 100,
+        "f_3_isSunny": false,
+        "expected_pv_now": 1856,
+        "expected_pv_today_peak": 1856,
+        "expected_pv_today_sum_kwh": 8,
+        "expected_pv_hourly": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          7,
+          0,
+          1353,
+          1792,
+          0,
+          421,
+          1114,
+          1856,
+          211,
+          7,
+          0,
+          739,
+          468,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expected_pv_daily_sum_kwh": [
+          8,
+          7.5,
+          2.6,
+          1.3
+        ],
+        "expected_pv_daily_peak": [
+          1856,
+          1521,
+          768,
+          389
+        ],
+        "labels": {},
+        "forecast": [
+          {
+            "dt": 1780909200,
+            "temp": 21.81,
+            "clouds": 32,
+            "description": "scattered clouds",
+            "icon": "03d",
+            "isSunny": false
+          },
+          {
+            "dt": 1780995600,
+            "temp": 24.63,
+            "clouds": 100,
+            "description": "overcast clouds",
+            "icon": "04d",
+            "isSunny": false
+          },
+          {
+            "dt": 1781082000,
+            "temp": 12.79,
+            "clouds": 100,
+            "description": "moderate rain",
+            "icon": "10d",
+            "isSunny": false
+          },
+          {
+            "dt": 1781168400,
+            "temp": 15.31,
+            "clouds": 100,
+            "description": "light rain",
+            "icon": "10d",
+            "isSunny": false
+          }
+        ]
+      },
+      "lastVal": "1856 -> TRUE",
+      "x": 61,
+      "y": -398,
+      "lastUpdate": 1780875486423,
+      "_z": 65
+    },
+    "wth-tomorrow": {
+      "id": "wth-tomorrow",
+      "type": "weather",
+      "name": "Tomorrow",
+      "config": {
+        "par": "f_1_isSunny",
+        "op": "gt",
+        "threshold": "0"
+      },
+      "data": {
+        "temp": 14.12,
+        "humidity": 92,
+        "clouds": 17,
+        "isSunny": true,
+        "f_0_temp": 21.81,
+        "f_0_clouds": 32,
+        "f_0_isSunny": false,
+        "f_1_temp": 24.63,
+        "f_1_clouds": 100,
+        "f_1_isSunny": false,
+        "f_2_temp": 12.79,
+        "f_2_clouds": 100,
+        "f_2_isSunny": false,
+        "f_3_temp": 15.31,
+        "f_3_clouds": 100,
+        "f_3_isSunny": false,
+        "expected_pv_now": 1856,
+        "expected_pv_today_peak": 1856,
+        "expected_pv_today_sum_kwh": 8,
+        "expected_pv_hourly": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          7,
+          0,
+          1353,
+          1792,
+          0,
+          421,
+          1114,
+          1856,
+          211,
+          7,
+          0,
+          739,
+          468,
+          0,
+          0,
+          0,
+          0
+        ],
+        "expected_pv_daily_sum_kwh": [
+          8,
+          7.5,
+          2.6,
+          1.3
+        ],
+        "expected_pv_daily_peak": [
+          1856,
+          1521,
+          768,
+          389
+        ],
+        "labels": {},
+        "forecast": [
+          {
+            "dt": 1780909200,
+            "temp": 21.81,
+            "clouds": 32,
+            "description": "scattered clouds",
+            "icon": "03d",
+            "isSunny": false
+          },
+          {
+            "dt": 1780995600,
+            "temp": 24.63,
+            "clouds": 100,
+            "description": "overcast clouds",
+            "icon": "04d",
+            "isSunny": false
+          },
+          {
+            "dt": 1781082000,
+            "temp": 12.79,
+            "clouds": 100,
+            "description": "moderate rain",
+            "icon": "10d",
+            "isSunny": false
+          },
+          {
+            "dt": 1781168400,
+            "temp": 15.31,
+            "clouds": 100,
+            "description": "light rain",
+            "icon": "10d",
+            "isSunny": false
+          }
+        ]
+      },
+      "lastVal": "false -> FALSE",
+      "x": -238.228515625,
+      "y": 191.4571533203125,
+      "lastUpdate": 1780875486423,
+      "_z": 107
+    },
+    "timer-cwu_okno": {
+      "id": "timer-cwu_okno",
+      "type": "timer",
+      "name": "Cwu Okno",
+      "config": {
+        "mode": "window",
+        "window_start": "10:00",
+        "window_end": "15:00",
+        "trigger_on_input": true,
+        "loop": true
+      },
+      "data": {
+        "_configHash": "{\"mode\":\"window\",\"window_start\":\"10:00\",\"window_end\":\"15:00\",\"trigger_on_input\":true,\"loop\":true}"
+      },
+      "lastVal": "8:22:00",
+      "x": 65,
+      "y": -271,
+      "_z": 66
+    },
+    "timer-noc_taryfa": {
+      "id": "timer-noc_taryfa",
+      "type": "timer",
+      "name": "Noc Taryfa",
+      "config": {
+        "mode": "window",
+        "window_start": "22:00",
+        "window_end": "06:00",
+        "trigger_on_input": true,
+        "loop": true
+      },
+      "data": {
+        "_configHash": "{\"mode\":\"window\",\"window_start\":\"22:00\",\"window_end\":\"06:00\",\"trigger_on_input\":true,\"loop\":true}"
+      },
+      "lastVal": "ACTIVE",
+      "x": 286,
+      "y": 234,
+      "_z": 70
+    },
+    "timer-popoludnie": {
+      "id": "timer-popoludnie",
+      "type": "timer",
+      "name": "Popoludnie",
+      "config": {
+        "mode": "window",
+        "window_start": "13:00",
+        "window_end": "15:00",
+        "trigger_on_input": true,
+        "loop": true
+      },
+      "data": {
+        "_configHash": "{\"mode\":\"window\",\"window_start\":\"13:00\",\"window_end\":\"15:00\",\"trigger_on_input\":true,\"loop\":true}"
+      },
+      "lastVal": "11:22:00",
+      "x": 244,
+      "y": 461,
+      "_z": 52
+    },
+    "and_cwu": {
+      "id": "and_cwu",
+      "type": "logic",
+      "name": "AND CWU",
+      "config": {
+        "mode": "and"
+      },
+      "data": {},
+      "lastVal": "FALSE",
+      "x": 480,
+      "y": 20
+    },
+    "and_night_bad": {
+      "id": "and_night_bad",
+      "type": "logic",
+      "name": "AND NIGHT BAD",
+      "config": {
+        "mode": "and"
+      },
+      "data": {},
+      "lastVal": "TRUE",
+      "x": 480,
+      "y": 160,
+      "_z": 93
+    },
+    "and_night_good": {
+      "id": "and_night_good",
+      "type": "logic",
+      "name": "AND NIGHT GOOD",
+      "config": {
+        "mode": "and"
+      },
+      "data": {},
+      "lastVal": "FALSE",
+      "x": 479,
+      "y": 315,
+      "_z": 28
+    },
+    "and_afternoon": {
+      "id": "and_afternoon",
+      "type": "logic",
+      "name": "AND AFTERNOON",
+      "config": {
+        "mode": "and"
+      },
+      "data": {},
+      "lastVal": "FALSE",
+      "x": 480,
+      "y": 460
+    },
+    "else_bad_weather": {
+      "id": "else_bad_weather",
+      "type": "else",
+      "name": "Else",
+      "config": {},
+      "data": {},
+      "lastVal": "TRUE",
+      "x": -24,
+      "y": 127,
+      "_z": 94
+    },
+    "tuya_cwu": {
+      "id": "tuya_cwu",
+      "type": "tuya",
+      "name": "Tuya Cwu",
+      "config": {
+        "device_id": "tuya-bf8beef7-mpszsbav",
+        "dps_control": "1",
+        "input_source": "node",
+        "action_type": "turn_on",
+        "par": "",
+        "op": "none",
+        "threshold": "0"
+      },
+      "data": {
+        "dps": {
+          "1": false,
+          "38": "2",
+          "39": "relay",
+          "43": "AAAC",
+          "47": "flip"
+        },
+        "dps_translated": {
+          "1": false,
+          "38": "2",
+          "39": "relay",
+          "43": "AAAC",
+          "47": "flip"
+        },
+        "online": true,
+        "mapping": {},
+        "category": "tdq",
+        "product_id": "l0haolo9qa8rn8t0",
+        "ip": "192.168.8.10",
+        "lastSync": 1780875114401,
+        "_lastSentTarget": false
+      },
+      "lastVal": "IN:false -> FALSE (OK)",
+      "x": 718,
+      "y": -112,
+      "lastUpdate": 1780875490537,
+      "_z": 41
+    },
+    "merge_exec": {
+      "id": "merge_exec",
+      "type": "merge",
+      "name": "Sumator OR",
+      "config": {
+        "enabled": true
+      },
+      "data": {},
+      "lastVal": "TRUE",
+      "x": 1212,
+      "y": 293,
+      "_z": 47
+    },
+    "execute_gate": {
+      "id": "execute_gate",
+      "type": "execute",
+      "name": "Bramka Wykonawcza",
+      "config": {},
+      "data": {
+        "_lastFireTime": 1780875491257,
+        "_fireCount": 457,
+        "_wasActive": false
+      },
+      "lastVal": "🔥 EXECUTE",
+      "x": 1461,
+      "y": 292,
+      "_z": 45
+    },
+    "inv-night_bad_low": {
+      "id": "inv-night_bad_low",
+      "type": "inverter",
+      "name": "Night Bad Low",
+      "config": {
+        "par": "battery_soc",
+        "op": "lt",
+        "threshold": "40"
+      },
+      "data": {
+        "solar_pv_power": "0",
+        "battery_real_level": "NaN",
+        "load_active_power": "0.2220",
+        "bt_battery_capacity": "34.0000",
+        "battery_active_power": "-0.2190",
+        "pv_output_power": "0",
+        "grid_active_power": "0.0000",
+        "gd_eybond_read_15": "0.0",
+        "gd_eybond_read_16": "0.00",
+        "gd_grid_active_power": "0",
+        "gd_eybond_read_45": "0.0",
+        "sy_eybond_read_14": "Off-Grid Mode",
+        "sy_eybond_read_38": "24",
+        "sy_eybond_read_39": "29",
+        "sy_eybond_read_49": "SBU",
+        "sy_eybond_read_75": "PV is at the same level as mains",
+        "pv_eybond_read_32": "21.6",
+        "pv_eybond_read_33": "0.0",
+        "pv_eybond_read_46": "0.0",
+        "bt_eybond_read_28": "52.3",
+        "bt_eybond_read_29": "-4.2",
+        "bc_eybond_read_23": "229.9",
+        "bc_eybond_read_24": "1.3",
+        "bc_eybond_read_25": "50.00",
+        "bc_load_active_power": "222",
+        "bc_eybond_read_27": "298",
+        "bc_eybond_read_37": "4",
+        "battery_soc": 34,
+        "labels": {
+          "gd_eybond_read_15": "Grid Voltage",
+          "gd_eybond_read_16": "Grid Frequency",
+          "gd_grid_active_power": "Grid Power",
+          "gd_eybond_read_45": "AC charging current",
+          "sy_eybond_read_14": "Operating mode",
+          "sy_eybond_read_38": "DC Module Termperature",
+          "sy_eybond_read_39": "INV Module Termperature",
+          "sy_eybond_read_49": "Output priority",
+          "sy_eybond_read_75": "Charger Source Priority",
+          "pv_eybond_read_32": "PV Voltage",
+          "pv_eybond_read_33": "PV Current",
+          "pv_output_power": "PV Power",
+          "pv_eybond_read_46": "PV charging current",
+          "bt_eybond_read_28": "Battery Voltage",
+          "bt_eybond_read_29": "Battery Current",
+          "bc_eybond_read_23": "Output Voltage",
+          "bc_eybond_read_24": "Output Current",
+          "bc_eybond_read_25": "Output frequency",
+          "bc_load_active_power": "Output Active Power",
+          "bc_eybond_read_27": "Output Apparent Power",
+          "bc_eybond_read_37": "Load Percent"
+        }
+      },
+      "lastVal": "34 -> TRUE",
+      "x": 20,
+      "y": 220,
+      "lastUpdate": 1780875489943
+    },
+    "tuya_tauron": {
+      "id": "tuya_tauron",
+      "type": "tuya",
+      "name": "Tauron",
+      "config": {
+        "device_id": "tuya-bfd64877-mpszsbav",
+        "dps_control": "1",
+        "input_source": "node",
+        "action_type": "turn_on",
+        "par": "",
+        "op": "none",
+        "threshold": "0"
+      },
+      "data": {
+        "dps": {
+          "1": false,
+          "9": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "20": 2389,
+          "21": 2,
+          "22": 0,
+          "23": 0,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "38": "off",
+          "40": "relay",
+          "41": false,
+          "42": "",
+          "47": 26,
+          "66": "online"
+        },
+        "dps_translated": {
+          "1": false,
+          "9": 0,
+          "17": 1,
+          "18": 0,
+          "19": 0,
+          "20": 2389,
+          "21": 2,
+          "22": 0,
+          "23": 0,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "38": "off",
+          "40": "relay",
+          "41": false,
+          "42": "",
+          "47": 26,
+          "66": "online"
+        },
+        "online": true,
+        "mapping": {},
+        "category": "dlq",
+        "product_id": "dmtrpqibupjoxiq4",
+        "ip": "192.168.8.19",
+        "lastSync": 1780875114401,
+        "_lastSentTarget": true
+      },
+      "lastVal": "IN:true -> TRUE (pending)",
+      "x": 1050,
+      "y": 290,
+      "_z": 90,
+      "lastUpdate": 1780875491250
+    }
+  },
+  "links": [
+    {
+      "id": "link-0",
+      "fromNode": "inv-soc_high",
+      "toNode": "and_cwu"
+    },
+    {
+      "id": "link-1",
+      "fromNode": "inv-pv_power",
+      "toNode": "and_cwu"
+    },
+    {
+      "id": "link-2",
+      "fromNode": "wth-today",
+      "toNode": "and_cwu"
+    },
+    {
+      "id": "link-3",
+      "fromNode": "timer-cwu_okno",
+      "toNode": "and_cwu"
+    },
+    {
+      "id": "link-4",
+      "fromNode": "and_cwu",
+      "toNode": "tuya_cwu"
+    },
+    {
+      "id": "link-5",
+      "fromNode": "and_cwu",
+      "toNode": "merge_exec"
+    },
+    {
+      "id": "link-6",
+      "fromNode": "inv-night_bad_low",
+      "toNode": "and_night_bad"
+    },
+    {
+      "id": "link-7",
+      "fromNode": "timer-noc_taryfa",
+      "toNode": "and_night_bad"
+    },
+    {
+      "id": "link-8",
+      "fromNode": "else_bad_weather",
+      "toNode": "and_night_bad"
+    },
+    {
+      "id": "link-10",
+      "fromNode": "and_night_bad",
+      "toNode": "merge_exec"
+    },
+    {
+      "id": "link-11",
+      "fromNode": "inv-night_low",
+      "toNode": "and_night_good"
+    },
+    {
+      "id": "link-12",
+      "fromNode": "timer-noc_taryfa",
+      "toNode": "and_night_good"
+    },
+    {
+      "id": "link-13",
+      "fromNode": "wth-tomorrow",
+      "toNode": "and_night_good"
+    },
+    {
+      "id": "link-15",
+      "fromNode": "and_night_good",
+      "toNode": "merge_exec"
+    },
+    {
+      "id": "link-16",
+      "fromNode": "inv-afternoon_low",
+      "toNode": "and_afternoon"
+    },
+    {
+      "id": "link-17",
+      "fromNode": "timer-popoludnie",
+      "toNode": "and_afternoon"
+    },
+    {
+      "id": "link-19",
+      "fromNode": "and_afternoon",
+      "toNode": "merge_exec"
+    },
+    {
+      "id": "link-21",
+      "fromNode": "wth-tomorrow",
+      "toNode": "else_bad_weather"
+    },
+    {
+      "id": "link-22",
+      "fromNode": "merge_exec",
+      "toNode": "execute_gate"
+    },
+    {
+      "id": "link-new-1",
+      "fromNode": "merge_exec",
+      "toNode": "tuya_tauron"
+    },
+    {
+      "id": "link-new-2",
+      "fromNode": "inv-emergency",
+      "toNode": "merge_exec"
+    }
+  ],
+  "settings": {
+    "weather": {
+      "apiKey": "5d652f0bff80d46c6a9ce422c48e4296",
+      "lat": "49.88087",
+      "lon": "19.56303"
+    },
+    "tuya": {
+      "apiKey": "xmdyfty4pwshcp4nwmtq",
+      "apiSecret": "2acf28fd1f474a1b932fc93f10ff30d0",
+      "region": "eu"
+    },
+    "solar": {
+      "kwp": 4.2,
+      "tilt": 90,
+      "azimuth": 202,
+      "elevation": 340,
+      "batteryKwh": 16,
+      "inverterKw": 6.4
+    },
+    "dess": {
+      "pn": "Q0046526419165",
+      "sn": "Q0046526419165094801",
+      "devcode": "2376",
+      "devaddr": "1",
+      "batteryVoltage": 48,
+      "username": "toshinori"
+    }
+  },
+  "tuya_devices": {
+    "tuya-bf1edb95-mpszsbav": {
+      "internal_app_id": "tuya-bf1edb95-mpszsbav",
+      "tuya_device_id": "bf1edb954ab9cd240ezcth",
+      "local_key": "esmufnYkW4MxAR<U",
+      "ip": null,
+      "name": "Motion Sensor",
+      "status": "offline",
+      "last_sync": 1780875114401,
+      "version": "3.4",
+      "category": "tdq",
+      "product_id": "gk0d4i8g5akryd9d"
+    },
+    "tuya-bfd64877-mpszsbav": {
+      "internal_app_id": "tuya-bfd64877-mpszsbav",
+      "tuya_device_id": "bfd64877960d2e26e7aqlj",
+      "local_key": "AZ@}+/b1?wmH~k;o",
+      "ip": "192.168.8.19",
+      "name": "TAURON",
+      "status": "online",
+      "last_sync": 1780875114401,
+      "version": "3.4",
+      "category": "dlq",
+      "product_id": "dmtrpqibupjoxiq4"
+    },
+    "tuya-bfc53dee-mpszsbav": {
+      "internal_app_id": "tuya-bfc53dee-mpszsbav",
+      "tuya_device_id": "bfc53dee2685cf9ca2or8v",
+      "local_key": "ixeX(izHji[(=OxY",
+      "ip": null,
+      "name": "CWU zbiornik",
+      "status": "online",
+      "last_sync": 1780875114401,
+      "category": "tdq",
+      "product_id": "jc1afi7ow32okd0h"
+    },
+    "tuya-bf8beef7-mpszsbav": {
+      "internal_app_id": "tuya-bf8beef7-mpszsbav",
+      "tuya_device_id": "bf8beef772cee0beb5aegc",
+      "local_key": "A[*?;T{y~0N#sZ+c",
+      "ip": "192.168.8.10",
+      "name": "CWU piwnica 2x",
+      "status": "online",
+      "last_sync": 1780875114401,
+      "version": "3.5",
+      "category": "tdq",
+      "product_id": "l0haolo9qa8rn8t0"
+    }
+  }
+}
