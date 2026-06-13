@@ -1,6 +1,6 @@
 export type NodeType = 'weather' | 'inverter' | 'tuya' | 'logic' | 'action' | 'else' | 'timer' | 'merge' | 'execute' | 'bms' | 'predictor' | 'calc';
 
-export type WidgetSourceType = 'preset-battery' | 'preset-load' | 'preset-pv' | 'preset-grid' | 'preset-battery-runtime' | 'tuya' | 'inverter' | 'weather' | 'predictor';
+export type WidgetSourceType = 'preset-battery' | 'preset-load' | 'preset-pv' | 'preset-grid' | 'preset-battery-runtime' | 'preset-charge-plan' | 'tuya' | 'inverter' | 'weather' | 'predictor';
 
 export interface TariffRange {
     start: string; // HH:MM
@@ -94,6 +94,7 @@ export interface AutomationState {
             elevation: number;
             batteryKwh: number;
             inverterKw: number;
+            chargeCurrentA: number;
         };
         dess: {
             pn: string;

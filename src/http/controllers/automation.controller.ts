@@ -10,7 +10,10 @@ import { getTodayStats } from '../../stats/daily-stats';
 
 export async function automationController(server: any) {
     // GET /automation/state
-    server.get('/automation/state', async () => {
+    server.get('/automation/state', async (request, reply) => {
+        reply.header('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        reply.header('Pragma', 'no-cache');
+        reply.header('Expires', '0');
         return automationState;
     });
 

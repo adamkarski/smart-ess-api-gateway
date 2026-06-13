@@ -130,9 +130,15 @@
       const el = nodesContainer.querySelector(`[data-node-id="${id}"]`) as HTMLElement
       if (!el) continue
       const node = state.nodes[id]
-      const sourceId = node.config?.device_id || node.id
+      const sourceId = node.type === 'tuya' ? node.id : (node.config?.device_id || node.id)
       const sourceNode = state.nodes[sourceId]
-      const dps = sourceNode?.data?.dps_translated || node.data?.dps_translated || {}
+      let dps = sourceNode?.data?.dps_translated || node.data?.dps_translated || {}
+      if (node.type === 'tuya' && Object.keys(dps).length === 0 && state.tuya_devices) {
+        const tuyaDev = Object.values(state.tuya_devices).find(
+          (d: any) => d.tuya_device_id === node.config?.device_id || d.internal_app_id === node.config?.device_id
+        )
+        if (tuyaDev) dps = tuyaDev.last_dps_translated || tuyaDev.last_dps || {}
+      }
 
       // Update toggle button
       const toggle = el.querySelector('.node-toggle') as HTMLElement
@@ -166,13 +172,21 @@
         }
       }
 
-      // Update relay badge
-      const relayBadge = el.querySelector('.node-relay-badge') as HTMLElement
-      if (relayBadge) {
+      // Update relay state
+      const relayState = el.querySelector('.node-relay-state') as HTMLElement
+      if (relayState) {
         const dpsIdx = node.config?.dps_control || 1
         const rawDps = sourceNode?.data?.dps || node.data?.dps || {}
-        const relayOn = rawDps[String(dpsIdx)] === true
-        relayBadge.style.display = relayOn ? 'block' : 'none'
+        let deviceDps: Record<string, any> = rawDps
+        if (Object.keys(deviceDps).length === 0 && state.tuya_devices) {
+          const tuyaDev = Object.values(state.tuya_devices).find(
+            (d: any) => d.tuya_device_id === node.config?.device_id || d.internal_app_id === node.config?.device_id
+          )
+          if (tuyaDev) deviceDps = tuyaDev.last_dps || {}
+        }
+        const relayOn = deviceDps[String(dpsIdx)] === true
+        relayState.textContent = relayOn ? '⚡ WŁĄCZONE' : '○ WYŁĄCZONE'
+        relayState.className = `node-relay-state ${relayOn ? 'on' : 'off'}`
       }
 
       // Update action log
@@ -240,7 +254,7 @@
       const hasOut = !['action', 'label', 'execute'].includes(node.type)
       const hasIn = !['inverter', 'weather', 'predictor', 'label'].includes(node.type)
 
-      div.innerHTML = buildNodeHTML(node, state)
+      div.innerHTML = buildNodeHTML(id, node, state)
       div.addEventListener('dblclick', (e) => {
         e.preventDefault(); e.stopPropagation()
         openEditPanel(id)
@@ -270,13 +284,19 @@
     requestAnimationFrame(() => drawConnections())
   }
 
-  function buildNodeHTML(node: any, state: any): string {
+  function buildNodeHTML(id: string, node: any, state: any): string {
     const enabled = node.config?.enabled !== false
     const icon = typeIcons[node.type] || 'fa-circle'
     const color = typeColors[node.type] || 'text-slate-600'
-    const sourceId = node.config?.device_id || node.id
+    const sourceId = node.type === 'tuya' ? node.id : (node.config?.device_id || node.id)
     const sourceNode = state.nodes[sourceId]
-    const dps = sourceNode?.data?.dps_translated || node.data?.dps_translated || {}
+    let dps = sourceNode?.data?.dps_translated || node.data?.dps_translated || {}
+    if (node.type === 'tuya' && Object.keys(dps).length === 0 && state.tuya_devices) {
+      const tuyaDev = Object.values(state.tuya_devices).find(
+        (d: any) => d.tuya_device_id === node.config?.device_id || d.internal_app_id === node.config?.device_id
+      )
+      if (tuyaDev) dps = tuyaDev.last_dps_translated || tuyaDev.last_dps || {}
+    }
 
     let html = `<div class="node-inner ${enabled ? '' : 'disabled'}">`
     html += `<div class="node-header"><i class="fas ${icon} ${color} text-[8px]"></i><span class="node-type-label">${node.type}</span>`
@@ -301,15 +321,21 @@
     }
 
     if (node.type === 'tuya' && node.config?.action_type) {
-      const al: Record<string, string> = { turn_on: '↻ ON', turn_off: '↻ OFF', toggle: '↻ TOGGLE', set_value: '↻ SET' }
-      html += `<div class="node-badge">${al[node.config.action_type] || ''}</div>`
-      const isOnline = sourceNode?.data?.online ?? node.data?.online
       const dpsIdx = node.config?.dps_control || 1
       const rawDps = sourceNode?.data?.dps || node.data?.dps || {}
-      const relayOn = rawDps[String(dpsIdx)] === true
+      let deviceDps: Record<string, any> = rawDps
+      if (Object.keys(deviceDps).length === 0 && state.tuya_devices) {
+        const tuyaDev = Object.values(state.tuya_devices).find(
+          (d: any) => d.tuya_device_id === node.config?.device_id || d.internal_app_id === node.config?.device_id
+        )
+        if (tuyaDev) deviceDps = tuyaDev.last_dps || {}
+      }
+      const relayOn = deviceDps[String(dpsIdx)] === true
+      const isOnline = sourceNode?.data?.online ?? node.data?.online
+      const onlineText = isOnline !== undefined ? (isOnline ? '● ONLINE' : '○ OFFLINE') : ''
+      html += `<div class="node-relay-state ${relayOn ? 'on' : 'off'}">${relayOn ? '⚡ WŁĄCZONE' : '○ WYŁĄCZONE'}</div>`
       html += `<div class="node-lcd">${node.lastVal || '---'}</div>`
-      if (isOnline !== undefined) html += `<div class="node-status-sm ${isOnline ? 'text-green-600' : 'text-slate-600'}">${isOnline ? '● ONLINE' : '○ OFFLINE'}</div>`
-      if (relayOn) html += `<div class="node-relay-badge">⚡ WŁĄCZONE</div>`
+      if (onlineText) html += `<div class="node-status-sm ${isOnline ? 'text-green-600' : 'text-slate-600'}">${onlineText}</div>`
     }
 
     if (['action', 'else', 'merge', 'logic', 'timer', 'execute'].includes(node.type) || (!['inverter', 'weather', 'tuya', 'predictor', 'label'].includes(node.type))) {
@@ -544,20 +570,19 @@
     const state = $automationState; if (!state) return
     if (state.links.find((l: any) => l.fromNode === fromId && l.toNode === toId)) return
     state.links.push({ id: `link-${Date.now()}`, fromNode: fromId, toNode: toId })
-    automationState.set(state); drawConnections(); savePositions(true)
+    automationState.set(state); drawConnections()
   }
 
   function deleteLink(id: string) {
     const state = $automationState; if (!state) return
     state.links = state.links.filter((l: any) => l.id !== id)
-    automationState.set(state); drawConnections(); savePositions(true)
+    automationState.set(state); drawConnections()
   }
-
   function toggleNode(id: string) {
     const state = $automationState; if (!state?.nodes?.[id]) return
     const n = state.nodes[id]; if (!n.config) n.config = {}
     n.config.enabled = n.config.enabled === false
-    automationState.set(state); savePositions(true); renderCanvas()
+    automationState.set(state); renderCanvas()
   }
 
   function selectNode(id: string) {
@@ -909,7 +934,9 @@
   :global(.node-log-box) { background:rgba(0,0,0,.4); width:100%; border-radius:4px; margin-top:2px; padding:4px; font-size:10px; font-family:monospace; color:#4ade80; text-align:center; word-break:break-all; }
   :global(.node-lcd) { font-size:11px; font-family:'LCD','LCD ITC Local','LCD ITC',monospace; letter-spacing:1px; color:#2dd4bf; margin-top:2px; pointer-events:none; }
   :global(.node-status-sm) { font-size:7px; pointer-events:none; text-align:center; }
-  :global(.node-relay-badge) { font-size:7px; color:#34d399; font-weight:900; text-transform:uppercase; letter-spacing:.1em; }
+  :global(.node-relay-state) { font-size:8px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; text-align:center; padding:2px 0; pointer-events:none; }
+  :global(.node-relay-state.on) { color:#34d399; }
+  :global(.node-relay-state.off) { color:#ef4444; }
   :global(.node-stats) { font-size:7px; color:#64748b; font-weight:700; text-transform:uppercase; display:flex; justify-content:space-between; width:100%; padding:0 2px; }
   :global(.timer-countdown) { font-size:11px; font-family:'LCD','LCD ITC Local','LCD ITC',monospace; letter-spacing:1px; color:#67e8f9; margin-top:2px; pointer-events:none; }
   :global(.socket) { position:absolute; width:10px; height:10px; border-radius:50%; border:2px solid #475569; background:#0f172a; z-index:20; cursor:crosshair; transition:all .15s; }

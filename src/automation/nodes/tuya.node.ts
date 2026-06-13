@@ -258,7 +258,7 @@ class TuyaLocalManager {
             const productId = cd.product_id || '';
             // Find a tuya node that references this device by config.device_id
             const node = Object.values(automationState.nodes).find(
-                n => n.config?.device_id === internalId
+                n => n.config?.device_id === internalId || n.config?.device_id === cd.id
             );
             if (node) {
                 const dpsRaw: Record<string, any> = {};

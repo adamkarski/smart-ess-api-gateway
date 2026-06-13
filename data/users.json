@@ -16,13 +16,6 @@
       "settings": {
         "dashboard_widgets": [
           {
-            "id": "widget-mqay1tau-tsi",
-            "title": "Ogółem dom",
-            "sourceType": "preset-battery-runtime",
-            "unit": "h",
-            "color": "text-cyan-500"
-          },
-          {
             "id": "widget-mqay26g5-3r0",
             "title": "Bateria",
             "sourceType": "preset-battery",
@@ -35,6 +28,30 @@
             "sourceType": "preset-grid",
             "unit": "W",
             "color": "text-purple-500"
+          },
+          {
+            "id": "widget-mqbdlvxa-q77",
+            "title": "Obciążenie",
+            "sourceType": "preset-load",
+            "unit": "W",
+            "color": "text-blue-500"
+          },
+          {
+            "id": "widget-mqbjkvi3-b6o",
+            "title": "CWU",
+            "sourceType": "tuya",
+            "unit": "°C",
+            "color": "text-teal-500",
+            "dpsDivisor": 10,
+            "deviceId": "tuya-bfc53dee-mpszsbav",
+            "dpsKey": "106"
+          },
+          {
+            "id": "widget-mqbkx40g-g69",
+            "title": "Plan Ładowania",
+            "sourceType": "preset-charge-plan",
+            "unit": "",
+            "color": "text-amber-500"
           }
         ]
       },

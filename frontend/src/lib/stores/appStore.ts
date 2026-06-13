@@ -140,9 +140,10 @@ export const dashboardData = derived([appData, automationState], ([$d, $as]) => 
     }
   }
 
-  // Predictor nodes data
+  // Predictor nodes data — prefer automation state, fall back to poll data (30s refresh)
   const predictorNodes = Object.values($as?.nodes || {}).filter((n: any) => n.type === 'predictor')
-  const predictorData = predictorNodes.length > 0 ? predictorNodes[0].data : {}
+  const nodeData = predictorNodes.length > 0 ? predictorNodes[0].data : {}
+  const predictorData = Object.keys(nodeData).length > 0 ? nodeData : ($d?.predictor || {})
 
   return {
     battery: {
@@ -224,7 +225,7 @@ export function stopPolling() {
 
 export async function fetchFullAutomation() {
   try {
-    const as = await fetch('/automation/state').then(r => r.json())
+    const as = await fetch(`/automation/state?_=${Date.now()}`).then(r => r.json())
     automationState.set(as)
     settings.set(as.settings)
   } catch {}

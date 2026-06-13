@@ -107,6 +107,9 @@
       } else if (modalSource === 'preset-battery-runtime') {
         modalUnit = 'h'
         modalColor = 'text-cyan-500'
+      } else if (modalSource === 'preset-charge-plan') {
+        modalUnit = ''
+        modalColor = 'text-amber-500'
       } else if (modalSource === 'preset-load') {
         modalUnit = 'W'
         modalColor = 'text-blue-500'
@@ -198,13 +201,29 @@
       case 'preset-battery-runtime': {
         const runtime = d.batteryRuntime ?? {}
         const pred = d.predictor ?? {}
+        const isCheap = pred.isCheapNow ? '🟢' : '🔴'
         return {
           main: runtime.avgRuntimeText || pred.hoursLeft || '--',
-          sub: `średnio | deficyt: ${pred.deficitKwh ?? '--'} kWh`,
+          sub: `deficyt ${pred.deficitKwh ?? '--'} kWh / cel ${pred.targetSoc ?? '--'}%`,
           pct: 100,
-          bottom: `${runtime.currentSoc ?? 0}% (${runtime.currentKwh ?? 0} kWh)`,
+          bottom: `${isCheap} ${pred.nextCheapWindowInfo ?? '--'} | PV: ${pred.nextPvWindowInfo ?? '--'}`,
           bottomUnit: '',
-          bottomLabel: `Cel: ${pred.targetSoc ?? '--'}% | ${pred.nextCheapWindowInfo ?? '--'}`
+          bottomLabel: `ładuj ${pred.requiredChargeMinutes ?? '--'}min (${pred.chargePowerKw ?? '?'}kW) | PV dziś ${pred.pvTodayKwh ?? 0}/${pred.pvTomorrowKwh ?? 0} kWh`
+        }
+      }
+      case 'preset-charge-plan': {
+        const pred = d.predictor ?? {}
+        const nextSrc = pred.nextChargeSource || '---'
+        const nextEmoji = nextSrc === 'PV' ? '☀️' : nextSrc === 'TAURON' ? '🔌' : '⚪'
+        const deficit = pred.deficitKwh ?? 0
+        const chargeMins = pred.requiredChargeMinutes ?? 0
+        return {
+          main: pred.hoursLeft ?? '--',
+          sub: `${nextEmoji} ${pred.nextChargeInfo ?? '--'}`,
+          pct: pred.nextChargeHours === 0 ? 100 : Math.max(5, 100 - (pred.nextChargeHours ?? 99) * 5),
+          bottom: deficit > 0 ? `${deficit} kWh / ${chargeMins}min` : '',
+          bottomUnit: '',
+          bottomLabel: ''
         }
       }
       default:
@@ -517,6 +536,36 @@
             </div>
           {/if}
         </div>
+      {:else if widget.sourceType === 'preset-charge-plan'}
+        <div class="gauge-card" class:edit-active={editMode} onclick={() => editMode && openEditModal(i)} role="button" tabindex="0" onkeydown={(e) => e.key === 'Enter' && editMode && openEditModal(i)}>
+          {#if editMode}
+            <div class="order-controls">
+              <button class="order-btn" onclick={(e) => { e.stopPropagation(); moveUp(i) }} disabled={i === 0} title="W górę"><i class="fa-solid fa-chevron-up"></i></button>
+              <button class="order-btn" onclick={(e) => { e.stopPropagation(); moveDown(i) }} disabled={i === $dashboardWidgets.length - 1} title="W dół"><i class="fa-solid fa-chevron-down"></i></button>
+            </div>
+            <button class="widget-delete" onclick={(e) => { e.stopPropagation(); deleteWidget(i) }} title="Usuń"><i class="fa-solid fa-times"></i></button>
+            <div class="edit-badge">EDYTUJ</div>
+          {/if}
+          <h3 class="gauge-label">{widget.title || 'Plan ładowania'}</h3>
+          <div class="flex flex-col items-center justify-center py-2 w-full">
+            <div class="text-center mb-1">
+              <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Czas na baterii</div>
+              <span class="text-4xl font-bold lcd-text text-cyan-400">{vals.main}</span>
+              <span class="unit-text text-cyan-400">h</span>
+            </div>
+            <div class="text-[11px] text-slate-400 font-mono text-center px-2 mb-2">
+              {vals.sub}
+            </div>
+            {#if vals.bottom}
+              <div class="mt-1 text-[10px] text-slate-500 text-center">{vals.bottom}</div>
+            {/if}
+          </div>
+          {#if vals.bottomLabel}
+            <div class="w-full pt-2 border-t border-slate-800 mt-1">
+              <div class="text-[9px] text-slate-600 text-center leading-tight">{vals.bottomLabel}</div>
+            </div>
+          {/if}
+        </div>
       {:else}
         <div class="gauge-card" class:edit-active={editMode} onclick={() => editMode && openEditModal(i)} role="button" tabindex="0" onkeydown={(e) => e.key === 'Enter' && editMode && openEditModal(i)}>
           {#if editMode}
@@ -595,6 +644,7 @@
           <option value="">-- wybierz --</option>
           <option value="preset-battery">🔋 Stan Baterii</option>
           <option value="preset-battery-runtime">⏱️ Czas pracy na baterii</option>
+          <option value="preset-charge-plan">⚡ Plan ładowania</option>
           <option value="preset-load">🏠 Pobór Domu</option>
           <option value="preset-pv">☀️ Panele PV</option>
           <option value="preset-grid">🔌 Sieć AC</option>

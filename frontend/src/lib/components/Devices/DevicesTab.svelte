@@ -34,11 +34,14 @@
   }
 
   function getRelayOn(dev: any): boolean {
+    // Check if any flow node has dps data for this device
     const deviceNode = Object.values($automationState?.nodes || {}).find(
-      (n: any) => n.type === 'tuya' && n.config?.device_id === dev.internal_app_id
+      (n: any) => n.type === 'tuya' && (n.config?.device_id === dev.internal_app_id || n.config?.device_id === dev.tuya_device_id)
     )
-    const dpsData = (deviceNode as any)?.data?.dps || {}
-    return dpsData['1'] === true
+    const nodeDps = (deviceNode as any)?.data?.dps || {}
+    if (nodeDps['1'] !== undefined) return nodeDps['1'] === true
+    // Fallback to last_dps from device cache
+    return dev.last_dps?.['1'] === true
   }
 
   async function controlTuya(id: string, dps: number, value: boolean) {

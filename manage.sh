@@ -87,20 +87,24 @@ EOF
     fi
     ;;
   restart)
-    echo "Building project..."
-    if npm run build; then
-        if [ ! -f "$PLIST_PATH" ]; then
-            $0 setup
-        else
-            if is_loaded; then
-                launchctl unload "$PLIST_PATH"
-            fi
-            launchctl load "$PLIST_PATH"
-            echo "Service restarted at $(get_url)"
-        fi
-    else
-        echo "Build failed! Restart aborted."
+    echo "Building backend..."
+    if ! npm run build; then
+        echo "Backend build failed! Restart aborted."
         exit 1
+    fi
+    echo "Building frontend..."
+    if ! npm run build --prefix "$PROJECT_DIR/frontend"; then
+        echo "Frontend build failed! Restart aborted."
+        exit 1
+    fi
+    if [ ! -f "$PLIST_PATH" ]; then
+        $0 setup
+    else
+        if is_loaded; then
+            launchctl unload "$PLIST_PATH"
+        fi
+        launchctl load "$PLIST_PATH"
+        echo "Service restarted at $(get_url)"
     fi
     ;;
   status)

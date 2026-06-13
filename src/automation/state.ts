@@ -53,6 +53,7 @@ export const automationState: AutomationState = {
             elevation: 340,
             batteryKwh: 10,
             inverterKw: 6.2,
+            chargeCurrentA: 40,
         },
         dess: {
             pn: 'Q0046526419165',

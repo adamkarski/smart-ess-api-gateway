@@ -5,21 +5,28 @@
       "type": "predictor",
       "name": "Predictor",
       "config": {},
-      "lastUpdate": 1781193076420,
+      "lastUpdate": 1781313003382,
       "data": {
         "currentSoc": 50,
         "currentKwh": 5,
         "batteryKwh": 10,
-        "avgConsumptionKw": 0.255,
-        "hoursLeft": 11.8,
+        "avgConsumptionKw": 0.32,
+        "hoursLeft": 9.4,
         "deficitKwh": 0,
-        "nextCheapWindowInfo": "tania od 22:00",
+        "nextCheapWindowInfo": "tania do 06:00",
         "pvTodayKwh": 0,
         "pvTomorrowKwh": 0,
-        "isCheapNow": false,
+        "isCheapNow": true,
         "targetSoc": 50,
         "energyNeededUntilNextCheap": 0,
         "energyNeededUntilNextPv": 0,
+        "nextPvWindowInfo": "PV ~3h",
+        "requiredChargeMinutes": 0,
+        "chargePowerKw": 1.92,
+        "minProjectedSoc": 0,
+        "nextChargeSource": "BATERIA",
+        "nextChargeHours": 99,
+        "nextChargeInfo": "bateria OK",
         "labels": {
           "currentSoc": "SOC (%)",
           "hoursLeft": "Pozostało godzin",
@@ -28,7 +35,14 @@
           "energyNeededUntilNextCheap": "Potrzeba do taniej (kWh)",
           "energyNeededUntilNextPv": "Potrzeba do PV (kWh)",
           "avgConsumptionKw": "Średnie zużycie (kW)",
-          "nextCheapWindowInfo": "Następne okienko"
+          "nextCheapWindowInfo": "Następne okienko",
+          "nextPvWindowInfo": "Następne PV",
+          "requiredChargeMinutes": "Czas ładowania (min)",
+          "chargePowerKw": "Moc ładowania (kW)",
+          "minProjectedSoc": "Min. prognozowany SOC (%)",
+          "nextChargeSource": "Następne ładowanie z",
+          "nextChargeHours": "Za ile godzin",
+          "nextChargeInfo": "Info o ładowaniu"
         }
       },
       "x": 100,
@@ -46,50 +60,35 @@
       "data": {
         "_configHash": "{\"mode\":\"tariff_offpeak\"}"
       },
-      "x": 400,
-      "y": 100,
+      "x": 398,
+      "y": 17,
       "lastVal": "SZCZYT 0.550zł/kWh"
     },
-    "deficit": {
-      "id": "deficit",
-      "type": "logic",
-      "name": "Deficyt baterii",
+    "calc-charge": {
+      "id": "calc-charge",
+      "type": "calc",
+      "name": "Potrzebne ładowanie",
       "config": {
-        "mode": "and",
-        "par": "deficitKwh",
-        "op": "gt",
-        "threshold": 0
+        "expr": "predictor && predictor.deficitKwh > 0.3 && predictor.currentSoc < 85"
+      },
+      "lastUpdate": 0,
+      "data": {
+        "value": false
+      },
+      "x": 400,
+      "y": 200,
+      "lastVal": "OK false"
+    },
+    "logic-and": {
+      "id": "logic-and",
+      "type": "logic",
+      "name": "Tania + potrzebne",
+      "config": {
+        "mode": "and"
       },
       "lastUpdate": 0,
       "data": {},
       "x": 700,
-      "y": 100,
-      "lastVal": "FALSE"
-    },
-    "soc-under-target": {
-      "id": "soc-under-target",
-      "type": "logic",
-      "name": "SOC < 80%",
-      "config": {
-        "mode": "and",
-        "par": "battery_soc",
-        "op": "lt",
-        "threshold": 80
-      },
-      "lastUpdate": 0,
-      "data": {},
-      "x": 1000,
-      "y": 100,
-      "lastVal": "WAITING..."
-    },
-    "merge-allow-charge": {
-      "id": "merge-allow-charge",
-      "type": "merge",
-      "name": "Zezwól na ładowanie",
-      "config": {},
-      "lastUpdate": 0,
-      "data": {},
-      "x": 1300,
       "y": 100,
       "lastVal": "FALSE"
     },
@@ -100,8 +99,8 @@
       "config": {},
       "lastUpdate": 0,
       "data": {},
-      "x": 1600,
-      "y": 100,
+      "x": 954,
+      "y": 99,
       "lastVal": "WAITING..."
     },
     "tauron-switch": {
@@ -110,36 +109,31 @@
       "name": "Ładowarka TAURON",
       "config": {
         "device_id": "bfd64877960d2e26e7aqlj",
-        "dps_key": "1",
         "dps_control": "1",
         "action_type": "turn_on"
       },
       "lastUpdate": 0,
       "data": {},
-      "x": 1900,
-      "y": 100,
+      "x": 1186,
+      "y": 102,
       "lastVal": "READY"
     }
   },
   "links": [
     {
-      "fromNode": "predictor-1",
-      "toNode": "deficit"
-    },
-    {
       "fromNode": "cheap-tariff",
-      "toNode": "merge-allow-charge"
+      "toNode": "logic-and"
     },
     {
-      "fromNode": "deficit",
-      "toNode": "merge-allow-charge"
+      "fromNode": "predictor-1",
+      "toNode": "calc-charge"
     },
     {
-      "fromNode": "soc-under-target",
-      "toNode": "merge-allow-charge"
+      "fromNode": "calc-charge",
+      "toNode": "logic-and"
     },
     {
-      "fromNode": "merge-allow-charge",
+      "fromNode": "logic-and",
       "toNode": "execute-charge"
     },
     {
@@ -164,7 +158,8 @@
       "azimuth": 222,
       "elevation": 340,
       "batteryKwh": 10,
-      "inverterKw": 6.2
+      "inverterKw": 6.2,
+      "chargeCurrentA": 40
     },
     "dess": {
       "pn": "Q0046526419165",
@@ -249,46 +244,46 @@
     ]
   },
   "weatherData": {
-    "temp": 13.01,
-    "description": "broken clouds",
+    "temp": 12.46,
+    "description": "overcast clouds",
     "isSunny": false,
-    "clouds": 75,
+    "clouds": 100,
     "forecast": [
       {
-        "dt": 1781254800,
-        "temp": 18.77,
-        "clouds": 5,
-        "description": "clear sky",
-        "icon": "01d",
-        "isSunny": true,
-        "dayOffset": 1
-      },
-      {
         "dt": 1781341200,
-        "temp": 14.8,
-        "clouds": 97,
-        "description": "overcast clouds",
-        "icon": "04d",
-        "isSunny": false,
-        "dayOffset": 2
-      },
-      {
-        "dt": 1781427600,
-        "temp": 16.12,
-        "clouds": 85,
+        "temp": 19.19,
+        "clouds": 59,
         "description": "light rain",
         "icon": "10d",
         "isSunny": false,
-        "dayOffset": 3
+        "dayOffset": 0
+      },
+      {
+        "dt": 1781427600,
+        "temp": 19.04,
+        "clouds": 54,
+        "description": "light rain",
+        "icon": "10d",
+        "isSunny": false,
+        "dayOffset": 1
       },
       {
         "dt": 1781514000,
-        "temp": 16.56,
-        "clouds": 100,
-        "description": "overcast clouds",
-        "icon": "04d",
-        "isSunny": false,
-        "dayOffset": 4
+        "temp": 15.95,
+        "clouds": 24,
+        "description": "light rain",
+        "icon": "10d",
+        "isSunny": true,
+        "dayOffset": 2
+      },
+      {
+        "dt": 1781600400,
+        "temp": 17.08,
+        "clouds": 12,
+        "description": "few clouds",
+        "icon": "02d",
+        "isSunny": true,
+        "dayOffset": 3
       }
     ],
     "raw": {
@@ -298,46 +293,46 @@
       },
       "weather": [
         {
-          "id": 803,
+          "id": 804,
           "main": "Clouds",
-          "description": "broken clouds",
-          "icon": "04d"
+          "description": "overcast clouds",
+          "icon": "04n"
         }
       ],
       "base": "stations",
       "main": {
-        "temp": 13.01,
-        "feels_like": 12.3,
-        "temp_min": 13.01,
-        "temp_max": 13.01,
+        "temp": 12.46,
+        "feels_like": 12.16,
+        "temp_min": 12.46,
+        "temp_max": 12.46,
         "pressure": 1018,
-        "humidity": 74,
+        "humidity": 92,
         "sea_level": 1018,
         "grnd_level": 975
       },
       "visibility": 10000,
       "wind": {
-        "speed": 3.13,
-        "deg": 310,
-        "gust": 4.49
+        "speed": 1.74,
+        "deg": 217,
+        "gust": 0.5
       },
       "clouds": {
-        "all": 75
+        "all": 100
       },
-      "dt": 1781192562,
+      "dt": 1781312523,
       "sys": {
         "type": 2,
         "id": 2096950,
         "country": "PL",
-        "sunrise": 1781145205,
-        "sunset": 1781203769
+        "sunrise": 1781317977,
+        "sunset": 1781376643
       },
       "timezone": 7200,
       "id": 3096162,
       "name": "Klecza Dolna",
       "cod": 200
     },
-    "timestamp": 1781192562856
+    "timestamp": 1781312523454
   },
   "solarForecast": {
     "expected_pv_hourly": [
@@ -346,40 +341,40 @@
       0,
       0,
       0,
-      0,
-      4,
-      15,
-      13,
-      54,
-      174,
-      358,
-      514,
-      308,
-      1022,
-      902,
-      473,
-      1246,
-      570,
-      408,
-      201,
-      19,
+      2,
+      36,
+      47,
+      41,
+      36,
+      274,
+      878,
+      1131,
+      876,
+      820,
+      246,
+      1092,
+      1188,
+      722,
+      404,
+      227,
+      9,
       0,
       0
     ],
-    "expected_pv_today_peak": 1246,
-    "expected_pv_today_sum_kwh": 6.3,
-    "expected_pv_now": 1246,
+    "expected_pv_today_peak": 1188,
+    "expected_pv_today_sum_kwh": 8,
+    "expected_pv_now": 0,
     "daily_sum_kwh": [
-      6.3,
-      18,
-      12.3,
-      13.2
+      8,
+      12.6,
+      13.7,
+      16.7
     ],
     "daily_peak": [
-      1246,
-      2033,
-      1653,
-      1485
+      1188,
+      1868,
+      2053,
+      2200
     ],
     "forecast_hourly": [
       [
@@ -388,49 +383,23 @@
         0,
         0,
         0,
-        0,
-        4,
-        15,
-        13,
-        54,
-        174,
-        358,
-        514,
-        308,
-        1022,
-        902,
-        473,
-        1246,
-        570,
-        408,
-        201,
-        19,
-        0,
-        0
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
+        2,
+        36,
+        47,
+        41,
+        36,
+        274,
+        878,
+        1131,
+        876,
+        820,
+        246,
+        1092,
+        1188,
+        722,
+        404,
+        227,
         9,
-        120,
-        199,
-        499,
-        788,
-        1203,
-        1222,
-        1702,
-        1760,
-        1962,
-        2033,
-        1638,
-        1700,
-        1554,
-        1065,
-        494,
-        61,
         0,
         0
       ],
@@ -441,22 +410,22 @@
         0,
         0,
         2,
-        24,
-        231,
-        137,
-        101,
-        681,
-        1142,
-        1069,
-        815,
-        1155,
-        1291,
-        1653,
-        1378,
-        1419,
-        635,
-        522,
-        34,
+        51,
+        208,
+        272,
+        649,
+        846,
+        197,
+        416,
+        1075,
+        1461,
+        1517,
+        1868,
+        1690,
+        1051,
+        1005,
+        169,
+        79,
         0,
         0
       ],
@@ -466,34 +435,60 @@
         0,
         0,
         0,
-        4,
-        86,
-        204,
-        368,
-        507,
+        2,
+        34,
+        41,
+        320,
+        547,
         607,
-        668,
-        838,
-        1081,
-        1289,
-        1440,
-        1485,
-        1414,
-        1278,
-        1048,
-        666,
-        169,
+        673,
+        566,
+        1096,
+        1504,
+        1457,
+        2053,
+        1957,
+        1463,
+        830,
+        492,
+        79,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        6,
+        90,
+        217,
+        345,
+        452,
+        536,
+        605,
+        922,
+        1343,
+        1651,
+        1937,
+        2181,
+        2200,
+        1890,
+        1365,
+        772,
+        186,
         0,
         0
       ]
     ],
     "forecast_dates": [
-      "2026-06-11",
-      "2026-06-12",
       "2026-06-13",
-      "2026-06-14"
+      "2026-06-14",
+      "2026-06-15",
+      "2026-06-16"
     ],
-    "timestamp": 1781192563174
+    "timestamp": 1781312524031
   },
   "tuya_devices": {
     "tuya-bf1edb95-mq9mxwx5": {
@@ -504,7 +499,7 @@
       "name": "Motion Sensor",
       "status": "online",
       "version": "3.3",
-      "last_sync": 1781192577755,
+      "last_sync": 1781312538132,
       "category": "tdq",
       "product_id": "gk0d4i8g5akryd9d",
       "last_dps": {
@@ -515,7 +510,7 @@
         "102": "high",
         "Luminance": "none"
       },
-      "last_dps_time": 1781192862245
+      "last_dps_time": 1781312822426
     },
     "tuya-bfc53dee-mq9mxwx5": {
       "internal_app_id": "tuya-bfc53dee-mq9mxwx5",
@@ -525,28 +520,28 @@
       "name": "CWU zbiornik",
       "status": "online",
       "version": "3.3",
-      "last_sync": 1781192577755,
+      "last_sync": 1781312538132,
       "category": "tdq",
       "product_id": "jc1afi7ow32okd0h",
       "last_dps": {
-        "101": 171,
-        "102": 66,
+        "101": 174,
+        "102": 63,
         "103": "middle",
         "104": 0,
         "105": 0,
-        "106": 190,
+        "106": 247,
         "107": 0
       },
       "last_dps_translated": {
-        "Temperature": 171,
-        "Humidity": 66,
+        "Temperature": 174,
+        "Humidity": 63,
         "Battery State": "middle",
         "Temp Calibration": 0,
         "Hum Calibration": 0,
-        "External Temperature": 190,
+        "External Temperature": 247,
         "Temp Correction": 0
       },
-      "last_dps_time": 1781192863471
+      "last_dps_time": 1781312823328
     },
     "tuya-bfd64877-mq9mxwx5": {
       "internal_app_id": "tuya-bfd64877-mq9mxwx5",
@@ -556,7 +551,7 @@
       "name": "TAURON",
       "status": "online",
       "version": "3.4",
-      "last_sync": 1781192577755,
+      "last_sync": 1781312538132,
       "category": "dlq",
       "product_id": "dmtrpqibupjoxiq4",
       "last_dps": {
@@ -565,7 +560,7 @@
         "17": 1,
         "18": 0,
         "19": 0,
-        "20": 2345,
+        "20": 2374,
         "21": 2,
         "22": 0,
         "23": 0,
@@ -576,7 +571,7 @@
         "40": "relay",
         "41": false,
         "42": "",
-        "47": 26,
+        "47": 27,
         "66": "online"
       },
       "last_dps_translated": {
@@ -585,7 +580,7 @@
         "17": 1,
         "18": 0,
         "19": 0,
-        "20": 2345,
+        "20": 2374,
         "21": 2,
         "22": 0,
         "23": 0,
@@ -596,10 +591,10 @@
         "40": "relay",
         "41": false,
         "42": "",
-        "47": 26,
+        "47": 27,
         "66": "online"
       },
-      "last_dps_time": 1781192864470
+      "last_dps_time": 1781312824098
     },
     "tuya-bf8beef7-mq9mxwx5": {
       "internal_app_id": "tuya-bf8beef7-mq9mxwx5",
@@ -609,7 +604,7 @@
       "name": "CWU piwnica 2x",
       "status": "online",
       "version": "3.5",
-      "last_sync": 1781192577755,
+      "last_sync": 1781312538132,
       "category": "tdq",
       "product_id": "l0haolo9qa8rn8t0",
       "last_dps": {
@@ -626,7 +621,7 @@
         "43": "AAAC",
         "47": "flip"
       },
-      "last_dps_time": 1781192865175
+      "last_dps_time": 1781312824592
     },
     "tuya-bfab84a1-mq9mxwx5": {
       "internal_app_id": "tuya-bfab84a1-mq9mxwx5",
@@ -636,7 +631,7 @@
       "name": "poidlo",
       "status": "online",
       "version": "3.5",
-      "last_sync": 1781192577755,
+      "last_sync": 1781312538132,
       "category": "cz",
       "product_id": "hthgmqorwcz7i4v2",
       "last_dps": {
@@ -673,8 +668,8 @@
         "41": false,
         "44": ""
       },
-      "last_dps_time": 1781192866044
+      "last_dps_time": 1781312825306
     }
   },
-  "_tick": 18
+  "_tick": 17
 }

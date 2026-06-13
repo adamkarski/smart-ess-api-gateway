@@ -188,7 +188,14 @@ async function updatePredictorNodes() {
         energyNeededUntilNextCheap: 'Potrzeba do taniej (kWh)',
         energyNeededUntilNextPv: 'Potrzeba do PV (kWh)',
         avgConsumptionKw: 'Średnie zużycie (kW)',
-        nextCheapWindowInfo: 'Następne okienko'
+        nextCheapWindowInfo: 'Następne okienko',
+        nextPvWindowInfo: 'Następne PV',
+        requiredChargeMinutes: 'Czas ładowania (min)',
+        chargePowerKw: 'Moc ładowania (kW)',
+        minProjectedSoc: 'Min. prognozowany SOC (%)',
+        nextChargeSource: 'Następne ładowanie z',
+        nextChargeHours: 'Za ile godzin',
+        nextChargeInfo: 'Info o ładowaniu',
     };
 
     predictorNodes.forEach(node => {

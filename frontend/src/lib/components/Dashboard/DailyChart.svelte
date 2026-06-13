@@ -303,12 +303,19 @@ let sf = $derived($globalSolarForecast ?? {});
         yaxis: { showgrid: true, gridcolor: 'rgba(255,255,255,0.03)', tickfont: { color: '#475569', size: 8 }, title: { text: 'kWh', font: { color: '#475569', size: 8 } } },
         hovermode: 'x unified',
         hoverlabel: { bgcolor: 'rgba(15,23,42,0.95)', font: { color: '#e2e8f0', size: 9 } },
-        shapes: (data.tariff?.offpeakRanges || []).map((r: any) => {
+        shapes: (data.tariff?.offpeakRanges || []).flatMap((r: any) => {
           const [sh, sm] = r.start.split(':').map(Number)
           const [eh, em] = r.end.split(':').map(Number)
           const startVal = sh + sm/60
-          let endVal = eh + em/60
-          if (endVal < startVal) endVal += 24 // handle overnight
+          const endVal = eh + em/60
+          
+          if (endVal <= startVal) {
+            // Overnight range — split into two rects: start→24, 0→end
+            return [
+              { type: 'rect', xref: 'x', yref: 'paper', x0: startVal, y0: 0, x1: 24, y1: 1, fillcolor: 'rgba(45, 212, 191, 0.05)', line: { width: 0 }, layer: 'below' },
+              { type: 'rect', xref: 'x', yref: 'paper', x0: 0, y0: 0, x1: endVal, y1: 1, fillcolor: 'rgba(45, 212, 191, 0.05)', line: { width: 0 }, layer: 'below' },
+            ]
+          }
           
           return {
             type: 'rect',

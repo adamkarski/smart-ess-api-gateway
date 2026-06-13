@@ -2,22 +2,24 @@ import { automationState } from './state';
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Resolve the automation file. Prefer a backup file if one exists (any file matching
-// "automation.json.backup*" in the data directory). This makes the running service
-// automatically pick up the most recent backup without needing a restart.
+// Resolve the automation file. Use the main file by default.
+// Fall back to the most recent backup only if the main file is missing.
 const DATA_DIR = path.resolve(__dirname, '../../data');
 let STORAGE_PATH = path.join(DATA_DIR, 'automation.json');
-try {
-  const files = fs.readdirSync(DATA_DIR);
-  const backups = files
-    .filter(f => f.startsWith('automation.json.backup'))
-    .map(f => ({ name: f, stat: fs.statSync(path.join(DATA_DIR, f)) }))
-    .sort((a, b) => b.stat.mtimeMs - a.stat.mtimeMs);
-  if (backups.length) {
-    STORAGE_PATH = path.join(DATA_DIR, backups[0].name);
+if (!fs.existsSync(STORAGE_PATH)) {
+  try {
+    const files = fs.readdirSync(DATA_DIR);
+    const backups = files
+      .filter(f => f.startsWith('automation.json.backup'))
+      .map(f => ({ name: f, stat: fs.statSync(path.join(DATA_DIR, f)) }))
+      .sort((a, b) => b.stat.mtimeMs - a.stat.mtimeMs);
+    if (backups.length) {
+      STORAGE_PATH = path.join(DATA_DIR, backups[0].name);
+      console.log('[Automation] Main file missing, using backup:', STORAGE_PATH);
+    }
+  } catch (e) {
+    console.warn('[Automation] Failed to resolve backup automation file:', e);
   }
-} catch (e) {
-  console.warn('[Automation] Failed to resolve backup automation file:', e);
 }
 
 
