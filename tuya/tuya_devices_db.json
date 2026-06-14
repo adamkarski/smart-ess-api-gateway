@@ -1,5 +1,5 @@
 {
-  "lastSync": "Sat Jun 13 03:02:18 2026",
+  "lastSync": "Sun Jun 14 18:33:58 2026",
   "devices": [
     {
       "active_time": 1780167138,
@@ -21,8 +21,33 @@
       "sub": false,
       "time_zone": "+02:00",
       "uid": "eu1777842626103oLiwQ",
-      "update_time": 1781309706,
+      "update_time": 1781450544,
       "uuid": "54ea68a3297f2255",
+      "category_name": "Breaker",
+      "gateway_id": ""
+    },
+    {
+      "active_time": 1778697543,
+      "biz_type": 0,
+      "category": "tdq",
+      "create_time": 1775420096,
+      "icon": "smart/icon/ay1573546958261faWcj/bc094eaf43f3ea7ba12dfc9b92dbf397.png",
+      "id": "bfc53dee2685cf9ca2or8v",
+      "ip": null,
+      "lat": "",
+      "local_key": "ixeX(izHji[(=OxY",
+      "lon": "",
+      "model": "",
+      "name": "CWU zbiornik",
+      "online": true,
+      "owner_id": "287571246",
+      "product_id": "jc1afi7ow32okd0h",
+      "product_name": "001T03Pro_T1-3S",
+      "sub": false,
+      "time_zone": "+02:00",
+      "uid": "eu1777842626103oLiwQ",
+      "update_time": 1781450100,
+      "uuid": "cae89dfc70c813ef",
       "category_name": "Breaker",
       "gateway_id": ""
     },
@@ -66,7 +91,7 @@
         },
         {
           "code": "cur_voltage",
-          "value": 2374
+          "value": 2393
         },
         {
           "code": "test_bit",
@@ -110,7 +135,7 @@
         },
         {
           "code": "temp_value",
-          "value": 27
+          "value": 30
         },
         {
           "code": "alarm_set_1",
@@ -128,36 +153,11 @@
       "sub": false,
       "time_zone": "+02:00",
       "uid": "eu1777842626103oLiwQ",
-      "update_time": 1781309290,
+      "update_time": 1781445705,
       "uuid": "ff4181c03c26ec4b",
       "category_name": "Circuit breaker",
       "gateway_id": "",
       "version": "3.4"
-    },
-    {
-      "active_time": 1778697543,
-      "biz_type": 0,
-      "category": "tdq",
-      "create_time": 1775420096,
-      "icon": "smart/icon/ay1573546958261faWcj/bc094eaf43f3ea7ba12dfc9b92dbf397.png",
-      "id": "bfc53dee2685cf9ca2or8v",
-      "ip": null,
-      "lat": "",
-      "local_key": "ixeX(izHji[(=OxY",
-      "lon": "",
-      "model": "",
-      "name": "CWU zbiornik",
-      "online": true,
-      "owner_id": "287571246",
-      "product_id": "jc1afi7ow32okd0h",
-      "product_name": "001T03Pro_T1-3S",
-      "sub": false,
-      "time_zone": "+02:00",
-      "uid": "eu1777842626103oLiwQ",
-      "update_time": 1781303914,
-      "uuid": "cae89dfc70c813ef",
-      "category_name": "Breaker",
-      "gateway_id": ""
     },
     {
       "active_time": 1778697487,
@@ -166,7 +166,7 @@
       "create_time": 1773308686,
       "icon": "smart/icon/ay1514166115504M4mB5/a0129b47f51df4301e6646571d9d31f7.png",
       "id": "bf8beef772cee0beb5aegc",
-      "ip": "192.168.8.82",
+      "ip": "192.168.8.84",
       "lat": "49.8809",
       "local_key": "A[*?;T{y~0N#sZ+c",
       "lon": "19.5631",
@@ -179,7 +179,7 @@
       "status": [
         {
           "code": "switch_1",
-          "value": false
+          "value": true
         },
         {
           "code": "countdown_1",
@@ -213,7 +213,7 @@
       "sub": false,
       "time_zone": "+02:00",
       "uid": "eu1777842626103oLiwQ",
-      "update_time": 1781297945,
+      "update_time": 1781434607,
       "uuid": "3ff71139d97de498",
       "category_name": "Breaker",
       "gateway_id": "",
@@ -226,7 +226,7 @@
       "create_time": 1753521717,
       "icon": "smart/icon/ay15532588194335cLlF/9646b2a6282b6b9358de1bc97a7de981.jpg",
       "id": "bfab84a1db82b97beevz0p",
-      "ip": "192.168.8.4",
+      "ip": "192.168.8.6",
       "lat": "49.8809",
       "local_key": "z1z~c1gv?r@&pyo|",
       "lon": "19.5631",
@@ -309,7 +309,7 @@
       "sub": false,
       "time_zone": "+02:00",
       "uid": "eu1777842626103oLiwQ",
-      "update_time": 1781208916,
+      "update_time": 1781434559,
       "uuid": "520cd45536b353d7",
       "category_name": "Socket",
       "gateway_id": "",

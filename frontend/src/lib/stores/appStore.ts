@@ -35,7 +35,7 @@ export const dashboardWidgets = writable<any[]>([])
 
 // Helper: find value in DESS status array by parameter name
 function getVal(arr: any[] | undefined, par: string): string | undefined {
-  return arr?.find((i: any) => i.par === par)?.val
+  return arr?.find((i: any) => i.par === par || i.id === par)?.val
 }
 
 function toWatts(v: string | undefined): number {
@@ -59,7 +59,7 @@ export const dashboardData = derived([appData, automationState], ([$d, $as]) => 
 
   const pvRaw = parseW(getVal(pars.pv_, 'PV Power')) || toWatts(getVal(flow.pv_status, 'pv_output_power'))
   const loadRaw = parseW(getVal(pars.bc_, 'Output Active Power')) || toWatts(getVal(flow.bc_status, 'load_active_power'))
-  const gridRaw = toWatts(getVal(flow.gd_status, 'grid_active_power'))
+  const gridRaw = parseW(getVal(pars.gd_, 'gd_grid_active_power')) || toWatts(getVal(flow.gd_status, 'grid_active_power'))
   const batPowerRaw = getVal(flow.bt_status, 'battery_active_power')
   let batWRaw = Math.abs(toWatts(batPowerRaw))
 
@@ -269,11 +269,15 @@ export async function fetchPoll() {
     if (pollData.displays) {
       automationState.update(state => {
         if (!state) return state
-        for (const [id, d] of Object.entries(pollData.displays) as [string, { lastVal?: string; lastUpdate?: number }][]) {
+        for (const [id, d] of Object.entries(pollData.displays) as [string, { lastVal?: string; lastUpdate?: number; consoleInput?: any }][]) {
           const node = state.nodes[id]
           if (node) {
             if (d.lastVal !== undefined) node.lastVal = d.lastVal
             if (d.lastUpdate !== undefined) node.lastUpdate = d.lastUpdate
+            if (d.consoleInput !== undefined) {
+              if (!node.data) node.data = {}
+              node.data.consoleInput = d.consoleInput
+            }
           }
         }
         return state

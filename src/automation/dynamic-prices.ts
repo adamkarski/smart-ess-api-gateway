@@ -103,5 +103,18 @@ export function getCurrentPricePerKwh(): number {
         if (price) return price.pricePerMwh / 1000;
     }
 
+    if (tariff.peakPricePerKwh !== undefined && tariff.peakPricePerKwh > 0) {
+        const currentMin = now.getHours() * 60 + now.getMinutes();
+        const inPeak = (tariff.peakRanges || []).some((r: { start: string; end: string }) => {
+            const [sh, sm] = r.start.split(':').map(Number);
+            const [eh, em] = r.end.split(':').map(Number);
+            const s = sh * 60 + sm;
+            const e = eh * 60 + em;
+            if (s < e) return currentMin >= s && currentMin < e;
+            return currentMin >= s || currentMin < e; // overnight range
+        });
+        if (inPeak) return tariff.peakPricePerKwh;
+    }
+
     return tariff.offpeakPricePerKwh || 0.55;
 }

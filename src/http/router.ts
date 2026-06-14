@@ -160,10 +160,16 @@ server.get('/api/poll', async function handler(request, reply) {
       return data ? { ...data, availableDays: getAvailableDays() } : { date, hours: [], totals: {}, availableDays: getAvailableDays() };
     })(),
   ]);
-  const displays: Record<string, { lastVal?: string; lastUpdate?: number }> = {};
+  const displays: Record<string, { lastVal?: string; lastUpdate?: number; consoleInput?: any }> = {};
   for (const [id, node] of Object.entries(automationState.nodes)) {
-    if (node.lastVal !== undefined || node.lastUpdate) {
-      displays[id] = { lastVal: node.lastVal, lastUpdate: node.lastUpdate };
+    if (node.lastVal !== undefined || node.lastUpdate || node.type === 'console') {
+      const entry: { lastVal?: string; lastUpdate?: number; consoleInput?: any } = {};
+      if (node.lastVal !== undefined) entry.lastVal = node.lastVal;
+      if (node.lastUpdate) entry.lastUpdate = node.lastUpdate;
+      if (node.type === 'console' && node.data?.consoleInput !== undefined) {
+        entry.consoleInput = node.data.consoleInput;
+      }
+      displays[id] = entry;
     }
   }
   const predictorNodes = Object.values(automationState.nodes).filter(n => n.type === 'predictor');

@@ -60,7 +60,7 @@ export async function authRenewCheck() {
 export async function authWatchManager() {
   await performAuth();
   setInterval(() => {
-    authRenewCheck();
+    authRenewCheck().catch(err => console.error('[Auth] Renew failed:', (err as Error).message));
   }, 10_000);
 }
 

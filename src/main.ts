@@ -10,6 +10,13 @@ import { spawn, execSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
+process.on('unhandledRejection', (reason) => {
+  console.error('[FATAL] Unhandled Rejection:', reason instanceof Error ? reason.message : reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] Uncaught Exception:', err.message);
+});
+
 async function main() {
   loadAutomationState();
   await tuyaManager.init();
@@ -48,8 +55,9 @@ async function main() {
   process.on('exit', () => { mdnsProcess.kill(); });
   console.log(`mDNS: Rozgłaszanie jako desmonitor.local (port ${port})`);
 
+  // Auth in background — don't block server start
   if (appConfig.dess.auth.username) {
-    await authWatchManager();
+    authWatchManager().catch(err => console.error('[Startup] Auth init failed (DESS API unreachable?), server will retry:', (err as Error).message));
   } else {
     console.warn('Auth credentials in env not found');
   }

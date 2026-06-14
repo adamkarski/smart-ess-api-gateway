@@ -100,6 +100,50 @@ function translateDps(category: string, mapping: Record<string, any>, dps: Recor
   return translated;
 }
 
+// Reverse map: numeric DPS index → code-name key (e.g. "1" → "switch" for dlq)
+const DPS_NUM_TO_CODE: Record<string, Record<string, string>> = {};
+for (const [cat, codeMap] of Object.entries(DPS_LABELS_CODE)) {
+  DPS_NUM_TO_CODE[cat] = {};
+  for (const [code, label] of Object.entries(codeMap)) {
+    const numMap = DPS_LABELS_NUM[cat];
+    if (!numMap) continue;
+    for (const [num, numLabel] of Object.entries(numMap)) {
+      if (numLabel === label) {
+        DPS_NUM_TO_CODE[cat][num] = code;
+        break;
+      }
+    }
+  }
+}
+
+/**
+ * Read a DPS value by numeric index, handling both key formats.
+ * Tuya cloud may store dps by code-name ("switch") while the engine
+ * always looks up by numeric index ("1").  This function tries both.
+ */
+export function getDpsValue(dps: Record<string, any> | undefined, dpsIndex: number, category?: string): any {
+  if (!dps) return undefined;
+  // Try numeric key first (e.g. dps["1"])
+  const numKey = String(dpsIndex);
+  if (dps[numKey] !== undefined) return dps[numKey];
+  // Try code-name key via reverse map (e.g. dps["switch"])
+  if (category && DPS_NUM_TO_CODE[category]?.[numKey]) {
+    const codeKey = DPS_NUM_TO_CODE[category][numKey];
+    if (dps[codeKey] !== undefined) return dps[codeKey];
+  }
+  // Product-specific override keys
+  if (category) {
+    for (const [pid, pmap] of Object.entries(PRODUCT_LABELS_NUM)) {
+      if (pmap[numKey]) {
+        // Find the code-name for this product-specific label
+        // (product-specific DPS come as raw numeric keys from local/cloud status,
+        //  but cloud sync may store them differently — just return undefined)
+      }
+    }
+  }
+  return undefined;
+}
+
 class TuyaLocalManager {
     private isSyncing = false;
     private ipMonitorProcess: any = null;
@@ -348,8 +392,14 @@ class TuyaLocalManager {
 
     async setStatus(internalId: string, dpsIndex: number, value: any) {
         const node = automationState.nodes[internalId];
-        const effectiveId = node?.config?.device_id || internalId;
-        const config = automationState.tuya_devices[effectiveId];
+        let effectiveId = node?.config?.device_id || internalId;
+        let config = automationState.tuya_devices[effectiveId];
+        if (!config) {
+            const found = Object.values(automationState.tuya_devices || {}).find(
+                d => d.tuya_device_id === effectiveId
+            );
+            if (found) { effectiveId = found.internal_app_id; config = found; }
+        }
         if (!config) {
             console.warn(`[Tuya] Cannot control ${effectiveId} - device not found.`);
             return false;
@@ -360,13 +410,27 @@ class TuyaLocalManager {
         if (hasLocalIp) {
             console.log(`[Tuya] Local control: ${config.name} DPS ${dpsIndex} -> ${value} (v${config.version || '3.3'})`);
             const ok = await this.controlLocal(config.tuya_device_id, config.ip, config.local_key, dpsIndex, value, config.version);
-            if (ok) return true;
-            console.warn(`[Tuya] Local control failed for ${config.name}, falling back to cloud...`);
+            if (ok) {
+                // Fire-and-forget: trust UDP delivery, no DPS verification
+                // DPS may take minutes to update via polling
+                return true;
+            }
+            console.warn(`[Tuya] Local control failed for ${config.name}`);
         } else {
             console.log(`[Tuya] No local IP for ${config.name}, using cloud control...`);
         }
 
+        // Cloud fallback rate-limited to once per 5 min
+        const lastCloud = node?.data?._lastCloudAttempt || 0;
+        const now = Date.now();
+        if (now - lastCloud < 300_000) {
+            const remaining = Math.round((300_000 - (now - lastCloud)) / 1000);
+            console.log(`[Tuya] Cloud fallback skipped (rate-limited, ${remaining}s remaining)`);
+            return false;
+        }
+
         console.log(`[Tuya] Cloud control: ${config.name} DPS ${dpsIndex} -> ${value}`);
+        if (node?.data) node.data._lastCloudAttempt = now;
         const cloudOk = await this.controlCloud(config.tuya_device_id, dpsIndex, value);
         if (!cloudOk) {
             console.error(`[Tuya] Cloud control failed for ${config.name}. If error is 1106 (permission deny), enable "Device Control" service in Tuya IoT Platform (iot.tuya.com → Project → Services → Device Control).`);

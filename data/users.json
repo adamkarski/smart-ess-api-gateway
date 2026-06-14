@@ -23,13 +23,6 @@
             "color": "text-teal-500"
           },
           {
-            "id": "widget-mqbco2dx-5g2",
-            "title": "Tauron",
-            "sourceType": "preset-grid",
-            "unit": "W",
-            "color": "text-purple-500"
-          },
-          {
             "id": "widget-mqbdlvxa-q77",
             "title": "Obciążenie",
             "sourceType": "preset-load",
@@ -37,21 +30,38 @@
             "color": "text-blue-500"
           },
           {
-            "id": "widget-mqbjkvi3-b6o",
-            "title": "CWU",
-            "sourceType": "tuya",
-            "unit": "°C",
-            "color": "text-teal-500",
-            "dpsDivisor": 10,
-            "deviceId": "tuya-bfc53dee-mpszsbav",
-            "dpsKey": "106"
-          },
-          {
             "id": "widget-mqbkx40g-g69",
             "title": "Plan Ładowania",
             "sourceType": "preset-charge-plan",
             "unit": "",
             "color": "text-amber-500"
+          },
+          {
+            "id": "widget-mqbqqpy4-5qi",
+            "title": "Tauron",
+            "sourceType": "preset-grid",
+            "unit": "W",
+            "color": "text-purple-500"
+          },
+          {
+            "id": "widget-mqclr9xb-khu",
+            "title": "CWU",
+            "sourceType": "tuya",
+            "unit": "°C",
+            "color": "text-teal-500",
+            "subParam": "101",
+            "subUnit": "°C",
+            "dpsDivisor": 10,
+            "subDivisor": 10,
+            "deviceId": "tuya-bfc53dee-mq9mxwx5",
+            "dpsKey": "106"
+          },
+          {
+            "id": "widget-mqdvloj8-11v",
+            "title": "Panele PV",
+            "sourceType": "preset-pv",
+            "unit": "W",
+            "color": "text-orange-500"
           }
         ]
       },

@@ -1,4 +1,4 @@
-export type NodeType = 'weather' | 'inverter' | 'tuya' | 'logic' | 'action' | 'else' | 'timer' | 'merge' | 'execute' | 'bms' | 'predictor' | 'calc';
+export type NodeType = 'weather' | 'inverter' | 'tuya' | 'logic' | 'action' | 'else' | 'timer' | 'merge' | 'execute' | 'bms' | 'predictor' | 'calc' | 'console';
 
 export type WidgetSourceType = 'preset-battery' | 'preset-load' | 'preset-pv' | 'preset-grid' | 'preset-battery-runtime' | 'preset-charge-plan' | 'tuya' | 'inverter' | 'weather' | 'predictor';
 
@@ -118,4 +118,5 @@ export interface AutomationState {
     };
     tuya_devices: Record<string, TuyaLocalDevice>; // Permanent storage for Tuya devices
     _tick?: number;
+    _latestSoc?: number; // Latest SOC from DESS flow data (0-100)
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { automationState } from '../../stores/appStore'
-  import { onMount, onDestroy } from 'svelte'
+  import { onMount, onDestroy, tick } from 'svelte'
 
   let canvasEl: HTMLDivElement
   let nodesContainer: HTMLDivElement
@@ -29,20 +29,31 @@
   let isPanning = false
   let panStart = { x: 0, y: 0 }
   let mounted = false
+  let showAddModal = $state(false)
+  let showConsoleTree = $state(false)
+  let consoleTreeData: any = $state(null)
+  let consoleTreeTitle = $state('')
 
   const typeIcons: Record<string, string> = {
   calc: 'fa-calculator',
     weather: 'fa-cloud-sun', inverter: 'fa-solar-panel', tuya: 'fa-plug', predictor: 'fa-brain',
     action: 'fa-terminal', else: 'fa-code-branch', timer: 'fa-hourglass-half',
     logic: 'fa-microchip', label: 'fa-font', merge: 'fa-code-merge',
-    execute: 'fa-circle-play'
+    execute: 'fa-circle-play', console: 'fa-display'
   }
   const typeColors: Record<string, string> = {
   calc: 'text-orange-400',
     weather: 'text-blue-400', inverter: 'text-orange-400', tuya: 'text-purple-400', predictor: 'text-cyan-400',
     action: 'text-green-400', else: 'text-amber-400', timer: 'text-cyan-400',
     logic: 'text-teal-400', label: 'text-pink-400', merge: 'text-indigo-400',
-    execute: 'text-emerald-400'
+    execute: 'text-emerald-400', console: 'text-slate-400'
+  }
+  const typeDescriptions: Record<string, string> = {
+    calc: 'Wyrażenie JS', weather: 'Dane pogodowe', inverter: 'Parametr inwertera',
+    tuya: 'Urządzenie Tuya', predictor: 'Predykcja PV', action: 'Akcja wyjścia',
+    else: 'W przeciwnym razie', timer: 'Czasomierz', logic: 'Bramka logiczna',
+    label: 'Etykieta grupująca', merge: 'Scalenie sygnałów', execute: 'Wykonaj grupę',
+    console: 'Podgląd danych'
   }
 
   onMount(() => {
@@ -89,6 +100,12 @@
         const id = el.dataset.nodeId as string
         toggleNode(id)
       }
+      const conBtn = target.closest('.console-expand-btn') as HTMLElement
+      if (conBtn) {
+        const id = conBtn.dataset.consoleId as string
+        const name = conBtn.dataset.nodeName || id
+        openConsoleTree(id, name)
+      }
     })
     nodesContainer.addEventListener('mousedown', (e) => {
       const target = e.target as HTMLElement
@@ -109,9 +126,18 @@
       if (nodeEl) { e.stopPropagation(); selectNode(nodeEl.dataset.nodeId as string) }
     })
     nodesContainer.addEventListener('contextmenu', (e) => {
+      e.preventDefault(); e.stopPropagation()
       const target = e.target as HTMLElement
       const nodeEl = target.closest('[data-node-id]') as HTMLElement
-      if (nodeEl) { e.preventDefault(); e.stopPropagation(); showContextMenu(e.clientX, e.clientY, nodeEl.dataset.nodeId as string, null) }
+      const linkEl = target.closest('.flow-line-hit') as HTMLElement
+      if (linkEl) {
+        const linkId = linkEl.dataset.linkId
+        if (linkId) showContextMenu(e.clientX, e.clientY, null, linkId)
+      } else if (nodeEl) {
+        showContextMenu(e.clientX, e.clientY, nodeEl.dataset.nodeId as string, null)
+      } else {
+        showContextMenu(e.clientX, e.clientY, '__add__', null)
+      }
     })
     nodesContainer.addEventListener('mouseup', (e) => {
       const target = e.target as HTMLElement
@@ -189,6 +215,22 @@
         relayState.className = `node-relay-state ${relayOn ? 'on' : 'off'}`
       }
 
+      // Update console expand button
+      if (node.type === 'console') {
+        const existingBtn = el.querySelector('.console-expand-btn') as HTMLElement
+        const hasJson = node.data?.consoleInput !== null && node.data?.consoleInput !== undefined && typeof node.data?.consoleInput === 'object'
+        if (hasJson && !existingBtn) {
+          const btn = document.createElement('button')
+          btn.className = 'console-expand-btn'
+          btn.dataset.consoleId = id
+          btn.dataset.nodeName = node.name
+          btn.innerHTML = '<i class="fas fa-tree"></i> JSON TREE'
+          el.querySelector('.node-inner')?.appendChild(btn)
+        } else if (!hasJson && existingBtn) {
+          existingBtn.remove()
+        }
+      }
+
       // Update action log
       const logBox = el.querySelector('.node-log-box') as HTMLElement
       if (logBox && node.type === 'action') {
@@ -259,11 +301,6 @@
         e.preventDefault(); e.stopPropagation()
         openEditPanel(id)
       })
-      div.addEventListener('contextmenu', (e) => {
-        e.preventDefault(); e.stopPropagation()
-        showContextMenu(e.clientX, e.clientY, id, null)
-      })
-
       // Sockets
       if (hasIn) {
         const s = document.createElement('div')
@@ -338,8 +375,15 @@
       if (onlineText) html += `<div class="node-status-sm ${isOnline ? 'text-green-600' : 'text-slate-600'}">${onlineText}</div>`
     }
 
-    if (['action', 'else', 'merge', 'logic', 'timer', 'execute'].includes(node.type) || (!['inverter', 'weather', 'tuya', 'predictor', 'label'].includes(node.type))) {
+    if (['action', 'else', 'merge', 'logic', 'timer', 'execute', 'calc', 'console'].includes(node.type) || (!['inverter', 'weather', 'tuya', 'predictor', 'label'].includes(node.type))) {
       html += `<div class="node-lcd">${node.lastVal || '---'}</div>`
+    }
+
+    if (node.type === 'console') {
+      const hasJson = node.data?.consoleInput !== null && node.data?.consoleInput !== undefined && typeof node.data?.consoleInput === 'object'
+      if (hasJson) {
+        html += `<button class="console-expand-btn" data-console-id="${id}" data-node-name="${node.name}"><i class="fas fa-tree"></i> JSON TREE</button>`
+      }
     }
 
     if (node.type === 'action') {
@@ -385,7 +429,7 @@
     const state = $automationState
     if (!state?.links) return
 
-    svgLayer.querySelectorAll('.flow-line').forEach(el => el.remove())
+    svgLayer.querySelectorAll('.flow-line, .flow-dot').forEach(el => el.remove())
     hitsLayer.innerHTML = ''
 
     state.links.forEach((link: any) => {
@@ -403,8 +447,8 @@
         const socket = elFrom.querySelector('.socket-out')
         if (socket) {
           const sRect = socket.getBoundingClientRect()
-          x1 = from.x + (sRect.left - rect.left + sRect.width / 2)
-          y1 = from.y + (sRect.top - rect.top + sRect.height / 2)
+          x1 = from.x + (sRect.left - rect.left + sRect.width / 2) / zoom
+          y1 = from.y + (sRect.top - rect.top + sRect.height / 2) / zoom
         } else {
           x1 = from.x + 180
           y1 = from.y + 40
@@ -416,8 +460,8 @@
         const socket = elTo.querySelector('.socket-in')
         if (socket) {
           const sRect = socket.getBoundingClientRect()
-          x2 = to.x + (sRect.left - rect.left + sRect.width / 2)
-          y2 = to.y + (sRect.top - rect.top + sRect.height / 2)
+          x2 = to.x + (sRect.left - rect.left + sRect.width / 2) / zoom
+          y2 = to.y + (sRect.top - rect.top + sRect.height / 2) / zoom
         } else {
           x2 = to.x
           y2 = to.y + 40
@@ -431,6 +475,22 @@
       line.setAttribute('d', d); line.setAttribute('class', 'flow-line')
       line.style.pointerEvents = 'none'
       svgLayer.appendChild(line)
+
+      // Animated dot for active links (source node lastVal is truthy)
+      const lv = (from as any)?.lastVal || ''
+      const active = !lv.includes('FALSE') && !lv.includes('WAITING') && !lv.includes('✖') && lv.length > 0
+      if (active) {
+        const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+        dot.setAttribute('class', 'flow-dot')
+        dot.setAttribute('r', '4')
+        dot.setAttribute('fill', '#22c55e')
+        const motion = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion')
+        motion.setAttribute('dur', '1.5s')
+        motion.setAttribute('repeatCount', 'indefinite')
+        motion.setAttribute('path', d)
+        dot.appendChild(motion)
+        svgLayer.appendChild(dot)
+      }
 
       const hit = document.createElementNS('http://www.w3.org/2000/svg', 'path')
       hit.setAttribute('d', d); hit.setAttribute('fill', 'none')
@@ -589,8 +649,9 @@
     selectedId = id; renderCanvas(); openEditPanel(id)
   }
 
-  function openEditPanel(id: string) {
+  async function openEditPanel(id: string) {
     editPanelOpen = true; isUserInteracting = true; selectedId = id
+    await tick()
     if (editContent && $automationState?.nodes?.[id]) {
       editContent.innerHTML = buildEditPanelHTML(id)
     }
@@ -616,7 +677,7 @@
       html += `<div><label class="text-[9px] uppercase font-black text-slate-500 tracking-widest block mb-2">Nazwa Bloku</label><input type="text" id="edit-node-name" value="${node.name}" class="edit-input"></div>`
       
       // Type selection
-      const types = ['logic', 'inverter', 'weather', 'predictor', 'timer', 'tuya', 'action', 'else', 'merge', 'execute', 'calc']
+      const types = ['logic', 'inverter', 'weather', 'predictor', 'timer', 'tuya', 'action', 'else', 'merge', 'execute', 'calc', 'console']
       html += `<div><label class="text-[9px] uppercase font-black text-slate-500 tracking-widest block mb-2">Typ Bloku</label><select id="edit-node-type" class="edit-input">`
       types.forEach(t => html += `<option value="${t}" ${node.type === t ? 'selected' : ''}>${t.toUpperCase()}</option>`)
       html += `</select></div>`
@@ -666,14 +727,38 @@
           <input type="text" id="edit-node-timer-end" value="${config.window_end || '00:00'}" class="edit-input w-1/3">
         </div>
       </div>`
+      const isCountdownOrSchedule = config.mode === 'countdown' || config.mode === 'schedule'
+      html += `<div class="flex gap-4">
+        <label class="flex items-center gap-2"><input type="checkbox" id="edit-node-timer-trigger" ${config.trigger_on_input !== false ? 'checked' : ''} class="edit-checkbox"> <span class="text-[9px] uppercase font-black text-slate-500 tracking-widest">Start na IN</span></label>
+        <label class="flex items-center gap-2"><input type="checkbox" id="edit-node-timer-loop" ${config.loop === true ? 'checked' : ''} class="edit-checkbox"> <span class="text-[9px] uppercase font-black text-slate-500 tracking-widest">↻ Pętla</span></label>
+      </div>`
     }
 
     if (node.type === 'tuya') {
+      const stateDevices = Object.values($automationState?.tuya_devices || {})
+      const currentDeviceId = config.device_id || ''
+      const currentDevice = stateDevices.find((d: any) => d.internal_app_id === currentDeviceId || d.tuya_device_id === currentDeviceId)
+      html += `<div><label class="text-[9px] uppercase font-black text-slate-500 tracking-widest block mb-2">Urządzenie</label><select id="edit-node-tuya-device" class="edit-input">
+        <option value="">-- wybierz --</option>
+        ${stateDevices.map((d: any) => `<option value="${d.internal_app_id}" ${currentDevice?.internal_app_id === d.internal_app_id ? 'selected' : ''}>${d.name}</option>`).join('')}
+      </select></div>`
+      const dpsOptions = ['1', '9', '18', '19', '20', '38', '41']
+      html += `<div><label class="text-[9px] uppercase font-black text-slate-500 tracking-widest block mb-2">Sterowanie DPS</label><select id="edit-node-tuya-dps" class="edit-input">
+        ${dpsOptions.map(v => `<option value="${v}" ${String(config.dps_control || 1) === v ? 'selected' : ''}>DPS ${v}</option>`).join('')}
+      </select></div>`
+      html += `<div><label class="text-[9px] uppercase font-black text-slate-500 tracking-widest block mb-2">Źródło sygnału</label>
+        <div class="flex gap-2">
+          <button type="button" class="btn-option ${config.input_source !== 'node' ? 'btn-option-active' : ''}" onclick="this.parentElement.querySelectorAll('.btn-option').forEach(b=>b.classList.remove('btn-option-active'));this.classList.add('btn-option-active');document.getElementById('edit-node-tuya-source').value='device'">Parametr urządzenia</button>
+          <button type="button" class="btn-option ${config.input_source === 'node' ? 'btn-option-active' : ''}" onclick="this.parentElement.querySelectorAll('.btn-option').forEach(b=>b.classList.remove('btn-option-active'));this.classList.add('btn-option-active');document.getElementById('edit-node-tuya-source').value='node'">Wejście z noda</button>
+        </div>
+        <input type="hidden" id="edit-node-tuya-source" value="${config.input_source || 'device'}">
+      </div>`
       html += `<div><label class="text-[9px] uppercase font-black text-slate-500 tracking-widest block mb-2">Typ Akcji</label><select id="edit-node-tuya-action" class="edit-input">
         <option value="turn_on" ${config.action_type === 'turn_on' ? 'selected' : ''}>Włącz (ON)</option>
         <option value="turn_off" ${config.action_type === 'turn_off' ? 'selected' : ''}>Wyłącz (OFF)</option>
         <option value="toggle" ${config.action_type === 'toggle' ? 'selected' : ''}>Przełącz (TOGGLE)</option>
       </select></div>`
+      html += `<button type="button" class="btn btn-teal text-[9px] w-full mt-2" id="edit-node-tuya-sync-btn" onclick="fetch('/automation/tuya/import',{method:'POST'}).then(()=>{this.textContent='✅ Zsynchronizowano'})"><i class="fa-solid fa-cloud-bolt"></i> Synch. chmurę</button>`
     }
 
     html += '</div>'
@@ -685,15 +770,32 @@
     hideContextMenu()
     contextNodeId = nodeId; contextLinkId = linkId
     if (!contextMenu) return
+    const isAdd = nodeId === '__add__'
+    const isNode = !!nodeId && !isAdd
+    const isLink = !!linkId
     ;['ctx-edit', 'ctx-duplicate', 'ctx-delete'].forEach(cls => {
       const el = contextMenu.querySelector('.' + cls) as HTMLElement
-      if (el) el.style.display = nodeId ? 'flex' : 'none'
+      if (el) el.style.display = isNode ? 'flex' : 'none'
     })
+    const addEl = contextMenu.querySelector('.ctx-add') as HTMLElement
+    if (addEl) addEl.style.display = isAdd ? 'flex' : 'none'
+    const addDiv = contextMenu.querySelector('.ctx-add-divider') as HTMLElement
+    if (addDiv) addDiv.style.display = isAdd ? 'block' : 'none'
     const delLink = contextMenu.querySelector('.ctx-delete-link') as HTMLElement
-    if (delLink) delLink.style.display = linkId ? 'flex' : 'none'
+    if (delLink) delLink.style.display = isLink ? 'flex' : 'none'
     contextMenu.style.left = x + 'px'; contextMenu.style.top = y + 'px'
     contextMenu.classList.remove('hidden')
     setTimeout(() => { document.addEventListener('click', hideContextMenu, { once: true }) }, 10)
+  }
+
+  function ctxAddNode() {
+    hideContextMenu()
+    showAddNodeModal()
+  }
+
+  function portal(node: HTMLElement) {
+    document.body.appendChild(node)
+    return { destroy() { if (node.parentNode) node.remove() } }
   }
 
   function hideContextMenu() { if (contextMenu) contextMenu.classList.add('hidden'); contextNodeId = null; contextLinkId = null }
@@ -773,11 +875,48 @@
     return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`
   }
 
-  function addNode() {
+  function addNodeOfType(type: string) {
     const state = $automationState; if (!state) return
     const id = `node-${Date.now()}`
-    state.nodes[id] = { id, type: 'logic', name: 'Nowy blok', config: {}, data: {}, x: 100, y: 100, lastUpdate: Date.now() }
+    const count = Object.keys(state.nodes).length
+    const offset = Math.min(count * 25, 300)
+    const name = typeDescriptions[type] || type
+    state.nodes[id] = { id, type: type as any, name: `Nowy ${name}`, config: {}, data: {}, x: 100 + offset, y: 100 + offset, lastUpdate: Date.now() }
+    showAddModal = false
     automationState.set(state); renderCanvas(); drawConnections(); savePositions(true)
+  }
+
+  function showAddNodeModal() {
+    showAddModal = true
+  }
+
+  function openConsoleTree(id: string, nodeName: string) {
+    const state = $automationState
+    const node = state?.nodes?.[id]
+    if (!node) return
+    consoleTreeData = node.data?.consoleInput ?? null
+    consoleTreeTitle = nodeName || id
+    showConsoleTree = true
+  }
+
+  function renderJsonTree(obj: any, depth = 0): string {
+    if (depth > 8) return '<span class="json-truncated">...</span>'
+    if (obj === null || obj === undefined) return '<span class="json-null">null</span>'
+    if (typeof obj === 'boolean') return `<span class="json-bool">${obj}</span>`
+    if (typeof obj === 'number') return `<span class="json-num">${obj}</span>`
+    if (typeof obj === 'string') return `<span class="json-str">"${obj.replace(/"/g, '\\"')}"</span>`
+    if (Array.isArray(obj)) {
+      if (obj.length === 0) return '<span class="json-bracket">[]</span>'
+      let items = obj.map((v, i) => `<div class="json-row" style="padding-left:${16 + depth * 16}px"><span class="json-key">${i}:</span> ${renderJsonTree(v, depth + 1)}</div>`).join('')
+      return `<div class="json-block">${items}</div>`
+    }
+    if (typeof obj === 'object') {
+      const keys = Object.keys(obj)
+      if (keys.length === 0) return '<span class="json-bracket">{}</span>'
+      let items = keys.map(k => `<div class="json-row" style="padding-left:${16 + depth * 16}px"><span class="json-key">${k}:</span> ${renderJsonTree(obj[k], depth + 1)}</div>`).join('')
+      return `<div class="json-block">${items}</div>`
+    }
+    return String(obj)
   }
 
   async function saveNodeConfig(id: string) {
@@ -823,6 +962,21 @@
     const timerEndEl = document.getElementById('edit-node-timer-end') as HTMLInputElement
     if (timerEndEl) node.config.window_end = timerEndEl.value
 
+    const timerTriggerEl = document.getElementById('edit-node-timer-trigger') as HTMLInputElement
+    if (timerTriggerEl) node.config.trigger_on_input = timerTriggerEl.checked
+
+    const timerLoopEl = document.getElementById('edit-node-timer-loop') as HTMLInputElement
+    if (timerLoopEl) node.config.loop = timerLoopEl.checked
+
+    const tuyaDeviceEl = document.getElementById('edit-node-tuya-device') as HTMLSelectElement
+    if (tuyaDeviceEl) node.config.device_id = tuyaDeviceEl.value
+
+    const tuyaDpsEl = document.getElementById('edit-node-tuya-dps') as HTMLSelectElement
+    if (tuyaDpsEl) node.config.dps_control = parseInt(tuyaDpsEl.value)
+
+    const tuyaSourceEl = document.getElementById('edit-node-tuya-source') as HTMLInputElement
+    if (tuyaSourceEl) node.config.input_source = tuyaSourceEl.value
+
     const tuyaActionEl = document.getElementById('edit-node-tuya-action') as HTMLSelectElement
     if (tuyaActionEl) node.config.action_type = tuyaActionEl.value
 
@@ -837,7 +991,7 @@
   <div class="section-header">
     <h2 class="section-title">Visual Logic Flow</h2>
     <div class="flex gap-3">
-      <button class="btn btn-blue" onclick={addNode}><i class="fas fa-plus mr-1"></i> Dodaj Blok</button>
+      <button class="btn btn-blue" onclick={showAddNodeModal}><i class="fas fa-plus mr-1"></i> Dodaj Blok</button>
       <button class="btn btn-teal" onclick={() => savePositions(false)}><i class="fas fa-save mr-1"></i> Zapisz</button>
       <button class="btn btn-slate" onclick={toggleFullscreen}>
         <i class="fas {isFullscreen ? 'fa-compress' : 'fa-expand'} mr-1"></i> 
@@ -846,7 +1000,7 @@
       <button class="btn btn-slate" onclick={refreshState} title="Odśwież widok"><i class="fas fa-sync-alt"></i></button>
     </div>
   </div>
-  <div class="canvas-wrapper" bind:this={canvasWrapper} role="application" oncontextmenu={(e) => e.preventDefault()} class:fullscreen={isFullscreen}>
+  <div class="canvas-wrapper" bind:this={canvasWrapper} role="application" class:fullscreen={isFullscreen}>
     <div class="canvas-bg" bind:this={canvasEl} onmousedown={onCanvasMouseDown} onclick={onCanvasClick}>
       <svg class="svg-layer" bind:this={svgLayer}>
         <path d={dragLine} class="drag-line" style="display: {dragLine ? 'block' : 'none'}" />
@@ -859,7 +1013,9 @@
 </div>
 
 <!-- Context Menu -->
-<div class="context-menu hidden" bind:this={contextMenu} onclick={(e) => e.stopPropagation()} oncontextmenu={(e) => e.preventDefault()}>
+<div use:portal class="context-menu hidden" bind:this={contextMenu} onclick={(e) => e.stopPropagation()} oncontextmenu={(e) => e.preventDefault()}>
+  <div class="ctx-item ctx-add" onclick={ctxAddNode}><i class="fas fa-plus text-[10px] w-4"></i> Dodaj blok</div>
+  <div class="ctx-divider ctx-add-divider"></div>
   <div class="ctx-item ctx-edit" onclick={ctxEdit}><i class="fas fa-pen text-[10px] w-4"></i> Edytuj</div>
   <div class="ctx-item ctx-duplicate" onclick={ctxDuplicate}><i class="fas fa-copy text-[10px] w-4"></i> Duplikuj</div>
   <div class="ctx-item ctx-delete-link" onclick={ctxDeleteLink}><i class="fas fa-unlink text-[10px] w-4"></i> Usuń połączenie</div>
@@ -869,7 +1025,7 @@
 
 <!-- Edit Panel Overlay -->
 {#if editPanelOpen}
-  <div class="edit-overlay" bind:this={editOverlay} onclick={(e) => { if (e.target === editOverlay) closeEditPanel() }}>
+  <div use:portal class="edit-overlay" bind:this={editOverlay} onclick={(e) => { if (e.target === editOverlay) closeEditPanel() }}>
     <div class="edit-panel">
       <div class="edit-panel-header">
         <span class="edit-panel-title">Edytuj: {selectedId ? ($automationState?.nodes?.[selectedId]?.name || selectedId) : ''}</span>
@@ -879,6 +1035,49 @@
       <div class="edit-panel-footer">
         <button class="btn btn-blue" onclick={() => { if (selectedId) saveNodeConfig(selectedId) }}>Zapisz</button>
         <button class="btn btn-slate" onclick={closeEditPanel}>Anuluj</button>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Add Node Modal -->
+{#if showAddModal}
+  <div use:portal class="add-modal-overlay" onclick={(e) => { if (e.target.classList.contains('add-modal-overlay')) showAddModal = false }}>
+    <div class="add-modal">
+      <div class="add-modal-header">
+        <span class="add-modal-title">Dodaj blok</span>
+        <button class="edit-close" onclick={() => showAddModal = false}>✕</button>
+      </div>
+      <div class="add-modal-body">
+        {#each Object.keys(typeIcons) as type}
+          {@const t = type}
+          <button class="add-type-item" onclick={() => addNodeOfType(t)}>
+            <i class="fas {typeIcons[t]} {typeColors[t]} text-sm"></i>
+            <div class="add-type-info">
+              <span class="add-type-name">{t}</span>
+              <span class="add-type-desc">{typeDescriptions[t] || ''}</span>
+            </div>
+          </button>
+        {/each}
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Console JSON Tree Viewer -->
+{#if showConsoleTree}
+  <div use:portal class="add-modal-overlay" onclick={(e) => { if (e.target.classList.contains('add-modal-overlay')) { showConsoleTree = false; consoleTreeData = null } }}>
+    <div class="console-tree-modal">
+      <div class="add-modal-header">
+        <span class="add-modal-title">JSON Tree: {consoleTreeTitle}</span>
+        <button class="edit-close" onclick={() => { showConsoleTree = false; consoleTreeData = null }}>✕</button>
+      </div>
+      <div class="console-tree-body">
+        {#if consoleTreeData !== null && consoleTreeData !== undefined}
+          <div class="json-tree">{@html renderJsonTree(consoleTreeData)}</div>
+        {:else}
+          <div class="console-tree-empty">Brak danych</div>
+        {/if}
       </div>
     </div>
   </div>
@@ -917,6 +1116,7 @@
   .drag-line { stroke:#38bdf8; stroke-width:2; fill:none; stroke-dasharray:5,5; pointer-events:none; }
   :global(.flow-line) { fill:none; stroke:#94a3b8; stroke-width:2.5; transition:stroke .15s; filter:drop-shadow(0 0 3px rgba(148,163,184,.2)); }
   :global(.flow-line-hover) { stroke:#38bdf8; stroke-width:3; filter:drop-shadow(0 0 6px rgba(56,189,248,.4)); }
+  :global(.flow-dot) { filter:drop-shadow(0 0 4px rgba(34,197,94,.6)); }
 
   :global(.flow-node) { position:absolute; top:0; left:0; cursor:grab; user-select:none; width:180px; background:linear-gradient(135deg,rgba(30,41,59,.95),rgba(15,23,42,.95)); border:1px solid rgba(71,85,105,.4); border-radius:16px; padding:10px 10px 10px 20px; box-shadow:0 10px 30px -10px rgba(0,0,0,.5); transition:border-color .2s,box-shadow .2s; }
   :global(.flow-node:hover) { border-color:rgba(56,189,248,.3); box-shadow:0 10px 30px -10px rgba(56,189,248,.15); }
@@ -944,21 +1144,49 @@
   :global(.socket-in) { top:50%; left:-6px; transform:translateY(-50%); }
   :global(.socket-out) { top:50%; right:-6px; transform:translateY(-50%); }
   :global(.socket-out:hover) { transform:translateY(-50%) scale(1.3); }
-  .context-menu { position:fixed; z-index:9999; background:rgba(15,23,42,.98); border:1px solid #334155; border-radius:12px; padding:4px; min-width:160px; box-shadow:0 20px 60px rgba(0,0,0,.6); backdrop-filter:blur(16px); }
-  .context-menu.hidden { display:none; }
-  .ctx-item { display:flex; align-items:center; gap:8px; padding:8px 12px; font-size:10px; font-weight:700; color:#cbd5e1; border-radius:8px; cursor:pointer; transition:all .15s; }
-  .ctx-item:hover { background:rgba(56,189,248,.1); color:#38bdf8; }
-  .ctx-divider { height:1px; background:#1e293b; margin:4px 0; }
-  .edit-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.6); z-index:5000; display:flex; justify-content:flex-end; backdrop-filter:blur(4px); }
-  .edit-panel { width:420px; max-width:100vw; background:#0f172a; border-left:1px solid #334155; display:flex; flex-direction:column; box-shadow:-10px 0 40px rgba(0,0,0,.5); }
-  .edit-panel-header { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.25rem; border-bottom:1px solid #334155; }
-  .edit-panel-title { font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.15em; color:#94a3b8; }
-  .edit-close { background:none; border:none; color:#64748b; font-size:18px; cursor:pointer; padding:4px; transition:color .2s; }
-  .edit-close:hover { color:white; }
-  .edit-panel-body { flex:1; overflow-y:auto; padding:1.25rem; }
-  .edit-panel-footer { padding:1rem 1.25rem; border-top:1px solid #334155; display:flex; gap:8px; justify-content:flex-end; }
+  :global(.context-menu) { position:fixed; z-index:9999; background:rgba(15,23,42,.98); border:1px solid #334155; border-radius:12px; padding:4px; min-width:160px; box-shadow:0 20px 60px rgba(0,0,0,.6); backdrop-filter:blur(16px); }
+  :global(.context-menu.hidden) { display:none; }
+  :global(.ctx-item) { display:flex; align-items:center; gap:8px; padding:8px 12px; font-size:10px; font-weight:700; color:#cbd5e1; border-radius:8px; cursor:pointer; transition:all .15s; }
+  :global(.ctx-item:hover) { background:rgba(56,189,248,.1); color:#38bdf8; }
+  :global(.ctx-divider) { height:1px; background:#1e293b; margin:4px 0; }
+  :global(.edit-overlay) { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.6); z-index:5000; display:flex; justify-content:flex-end; backdrop-filter:blur(4px); }
+  :global(.edit-panel) { width:420px; max-width:100vw; background:#0f172a; border-left:1px solid #334155; display:flex; flex-direction:column; box-shadow:-10px 0 40px rgba(0,0,0,.5); }
+  :global(.edit-panel-header) { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.25rem; border-bottom:1px solid #334155; }
+  :global(.edit-panel-title) { font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.15em; color:#94a3b8; }
+  :global(.edit-close) { background:none; border:none; color:#64748b; font-size:18px; cursor:pointer; padding:4px; transition:color .2s; }
+  :global(.edit-close:hover) { color:white; }
+  :global(.edit-panel-body) { flex:1; overflow-y:auto; padding:1.25rem; }
+  :global(.edit-panel-footer) { padding:1rem 1.25rem; border-top:1px solid #334155; display:flex; gap:8px; justify-content:flex-end; }
   :global(.edit-input) { width:100%; background:#020617; border:1px solid #334155; border-radius:12px; padding:10px 16px; font-size:14px; color:white; outline:none; transition:border-color .2s; }
   :global(.edit-input:focus) { border-color:#0d9488; }
+  :global(.btn-option) { flex:1; padding:8px 12px; font-size:9px; font-weight:900; text-transform:uppercase; letter-spacing:.1em; border-radius:10px; border:1px solid #334155; background:#020617; color:#94a3b8; cursor:pointer; transition:all .2s; }
+  :global(.btn-option:hover) { border-color:#0d9488; color:white; }
+  :global(.btn-option-active) { background:#0d9488; border-color:#0d9488; color:white; }
+  :global(.edit-checkbox) { width:16px; height:16px; accent-color:#0d9488; cursor:pointer; }
+
+  :global(.add-modal-overlay) { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,.6); z-index:5000; display:flex; justify-content:center; align-items:center; backdrop-filter:blur(4px); }
+  :global(.add-modal) { width:480px; max-width:90vw; max-height:80vh; background:#0f172a; border:1px solid #334155; border-radius:20px; display:flex; flex-direction:column; box-shadow:0 25px 60px rgba(0,0,0,.6); }
+  :global(.add-modal-header) { display:flex; justify-content:space-between; align-items:center; padding:1rem 1.25rem; border-bottom:1px solid #334155; }
+  :global(.add-modal-title) { font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.15em; color:#94a3b8; }
+  :global(.add-modal-body) { flex:1; overflow-y:auto; padding:1rem; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  :global(.add-type-item) { display:flex; align-items:center; gap:10px; padding:10px 12px; background:#020617; border:1px solid #1e293b; border-radius:12px; cursor:pointer; transition:all .15s; text-align:left; }
+  :global(.add-type-item:hover) { border-color:#38bdf8; background:rgba(56,189,248,.08); }
+  :global(.add-type-info) { display:flex; flex-direction:column; gap:1px; min-width:0; }
+  :global(.add-type-name) { font-size:10px; font-weight:700; color:#e2e8f0; text-transform:uppercase; letter-spacing:.05em; }
+  :global(.add-type-desc) { font-size:8px; color:#64748b; font-weight:600; }
+  :global(.console-tree-modal) { width:560px; max-width:90vw; max-height:80vh; background:#0f172a; border:1px solid #334155; border-radius:20px; display:flex; flex-direction:column; box-shadow:0 25px 60px rgba(0,0,0,.6); }
+  :global(.console-tree-body) { flex:1; overflow:auto; padding:1rem; font-family:'Fira Code','JetBrains Mono',monospace; font-size:11px; line-height:1.6; }
+  :global(.console-tree-empty) { color:#64748b; font-size:12px; text-align:center; padding:2rem; font-family:sans-serif; }
+  :global(.json-tree) { color:#e2e8f0; }
+  :global(.json-row) { white-space:nowrap; }
+  :global(.json-key) { color:#818cf8; font-weight:600; margin-right:4px; }
+  :global(.json-null) { color:#64748b; font-style:italic; }
+  :global(.json-bool) { color:#f472b6; }
+  :global(.json-num) { color:#34d399; }
+  :global(.json-str) { color:#fbbf24; }
+  :global(.json-truncated) { color:#64748b; font-style:italic; }
+  :global(.console-expand-btn) { font-size:7px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; padding:2px 8px; border-radius:6px; border:1px solid rgba(148,163,184,.2); background:rgba(148,163,184,.08); color:#94a3b8; cursor:pointer; transition:all .15s; margin-top:2px; pointer-events:auto; }
+  :global(.console-expand-btn:hover) { background:rgba(148,163,184,.2); color:#e2e8f0; border-color:rgba(148,163,184,.4); }
 
   @media (max-width: 768px) {
     .section-card { background: #2a2d35; backdrop-filter: none; border: none; border-radius: 24px; box-shadow: 14px 14px 42px #1a1d22, -14px -14px 42px #3d414b; }

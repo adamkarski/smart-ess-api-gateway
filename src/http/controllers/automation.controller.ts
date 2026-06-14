@@ -168,6 +168,10 @@ export async function automationController(server: any) {
                     // Protect runtime data from being overwritten by potentially stale frontend cache
                     const { data, lastVal, lastUpdate, ...safeNode } = nodes[id];
                     Object.assign(automationState.nodes[id], safeNode);
+                } else {
+                    // New node from frontend — create it
+                    const { data, lastVal, lastUpdate, ...safeNode } = nodes[id];
+                    automationState.nodes[id] = { id, data: {}, lastUpdate: Date.now(), ...safeNode };
                 }
             }
         }

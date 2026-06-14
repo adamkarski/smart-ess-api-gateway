@@ -1,7 +1,7 @@
 import { automationState } from '../state';
 import { runCalcNode } from '../nodes/calc.node';
 import { fetchWeather, fetchSolarForecast } from '../nodes/weather.node';
-import { tuyaManager } from '../nodes/tuya.node';
+import { tuyaManager, getDpsValue } from '../nodes/tuya.node';
 import { controllerGetData } from '../../http/controllers/query-data.controller';
 import { saveAutomationState } from '../persistence';
 import { accumulate } from '../../stats/daily-stats';
@@ -56,13 +56,15 @@ function isTimeInRange(current: number, start: string, end: string, earlyCutoffM
     let endMin = eh * 60 + em;
     const currentMin = current;
 
-    if (earlyCutoffMin > 0) {
-        endMin = Math.max(startMin + 1, endMin - earlyCutoffMin);
-    }
-
     if (startMin <= endMin) {
+        if (earlyCutoffMin > 0) {
+            endMin = Math.max(startMin + 1, endMin - earlyCutoffMin);
+        }
         return currentMin >= startMin && currentMin < endMin;
     } else {
+        if (earlyCutoffMin > 0) {
+            endMin = Math.max(0, endMin - earlyCutoffMin);
+        }
         return currentMin >= startMin || currentMin < endMin;
     }
 }
@@ -196,10 +198,49 @@ async function updatePredictorNodes() {
         nextChargeSource: 'Następne ładowanie z',
         nextChargeHours: 'Za ile godzin',
         nextChargeInfo: 'Info o ładowaniu',
+        minReserveSoc: 'Min. SOC rezerwa (%)',
+        cutoffSocGrid: 'Cutoff SOC grid (%)',
+        cutoffSocOffGrid: 'Cutoff SOC off-grid (%)',
+        cutoffVoltage: 'Cutoff voltage (V)',
     };
 
+    // Add inverter SOC protection settings to predictor data
+    const invNode = Object.values(automationState.nodes).find(n => n.type === 'inverter');
+    let cutoffSocGrid: number | null = null;
+    let cutoffSocOffGrid: number | null = null;
+    let cutoffVoltage: number | null = null;
+
+    if (invNode?.data) {
+        const d = invNode.data as Record<string, any>;
+        const invLabels: Record<string, string> = d.labels || {};
+        cutoffVoltage = d.bat_battery_cut_off_voltage !== undefined ? Number(d.bat_battery_cut_off_voltage) : null;
+
+        for (const [key, label] of Object.entries(invLabels)) {
+            const lower = (label || '').toLowerCase();
+            const val = Number(d[key]);
+            if (isNaN(val) || val <= 0 || val > 100) continue;
+
+            if (lower.includes('soc') && (lower.includes('protection') || lower.includes('low') || lower.includes('cut'))) {
+                if (lower.includes('grid') || lower.includes('mains') || lower.includes('on grid')) {
+                    cutoffSocGrid = val;
+                } else if (lower.includes('off')) {
+                    cutoffSocOffGrid = val;
+                } else if (!cutoffSocGrid) {
+                    cutoffSocGrid = val;
+                }
+            }
+        }
+    }
+
     predictorNodes.forEach(node => {
-        node.data = { ...estimate, labels };
+        node.data = {
+            ...estimate,
+            labels,
+            minReserveSoc: EnergyManager.getDischargeCutoffSoc(),
+            cutoffSocGrid,
+            cutoffSocOffGrid,
+            cutoffVoltage,
+        };
         node.lastUpdate = Date.now();
     });
     console.log('[Engine] Predictor nodes updated');
@@ -241,12 +282,16 @@ async function fetchInverterData() {
                 };
                 const pvW = findVal(flowAny.pv_status, 'pv_output_power') * 1000;
                 const loadW = findVal(flowAny.bc_status, 'load_active_power') * 1000;
-                const gridW = findVal(flowAny.gd_status, 'grid_active_power') * 1000;
+                let gridW = findVal(flowAny.gd_status, 'grid_active_power') * 1000;
+                if (gridW === 0 && rawParams['gd_grid_active_power'] !== undefined) {
+                    gridW = Number(rawParams['gd_grid_active_power']);
+                }
                 const batW_raw = findVal(flowAny.bt_status, 'battery_active_power') * 1000;
                 const batW = Math.abs(batW_raw);
                 const bStat = (flowAny.bt_status || []).find((i: any) => i.par === 'battery_active_power');
                 const batStatus = bStat ? (bStat as any).status || 0 : 0;
                 const batCap = Number(rawParams['bt_battery_capacity'] || (data as any).formattedData?.battery_real_level || 0);
+                automationState._latestSoc = batCap;
                 accumulate(pvW, loadW, gridW, batW, batStatus, batCap);
                 console.log('[Engine] Stats accumulated');
             } catch (e) {
@@ -550,6 +595,31 @@ export function evaluateFlow() {
             return;
         }
 
+        // Console node – pass-through, stores raw input for frontend display
+        if (node.type === 'console') {
+            const links = (automationState.links || []).filter(l => l.toNode === node.id);
+            if (links.length === 0) {
+                node.data.consoleInput = null;
+                nodeResults[node.id] = null;
+                node.lastVal = 'NO SIGNAL';
+                return;
+            }
+            const inputVal = nodeResults[links[0].fromNode];
+            node.data.consoleInput = inputVal;
+            if (typeof inputVal === 'object' && inputVal !== null) {
+                const len = Array.isArray(inputVal) ? inputVal.length : Object.keys(inputVal).length;
+                node.lastVal = `📋 JSON (${len})`;
+            } else if (inputVal === true || inputVal === false) {
+                node.lastVal = inputVal ? 'TRUE' : 'FALSE';
+            } else if (inputVal === null || inputVal === undefined) {
+                node.lastVal = 'NULL';
+            } else {
+                node.lastVal = String(inputVal);
+            }
+            nodeResults[node.id] = inputVal;
+            return;
+        }
+
         if (node.type === 'merge') {
             if (nodeResults[node.id] !== undefined) return;
             const links = (automationState.links || []).filter(l => l.toNode === node.id);
@@ -825,7 +895,8 @@ export function evaluateFlow() {
         if (nodeResults[node.id] !== undefined) return;
         const config = node.config || {};
         const data = node.data || {};
-        const inputSource = config.input_source || 'device';
+        const hasLinks = (automationState.links || []).some(l => l.toNode === node.id);
+        const inputSource = config.input_source || (hasLinks && !config.par ? 'node' : 'device');
 
         let inputVal: any = null;
         let inputLabel = '';
@@ -877,7 +948,7 @@ export function evaluateFlow() {
         if (actionType === 'toggle') {
             const lastToggle = node.data._lastToggleResult;
             if (result && result !== lastToggle) {
-                const currentVal = data.dps?.[String(dpsIndex)];
+                const currentVal = getDpsValue(data.dps, dpsIndex, data.category);
                 const toggleVal = !currentVal;
                 console.log(`[Engine] 🔧 Toggle: ${node.name} DPS ${dpsIndex} => ${toggleVal}`);
                 const performAction = async () => {
@@ -908,17 +979,11 @@ export function evaluateFlow() {
                 targetValue = true;
             }
 
-            const currentVal = data.dps?.[String(dpsIndex)];
+            const currentVal = getDpsValue(data.dps, dpsIndex, data.category);
             const lastSent = node.data._lastSentTarget;
 
             if (currentVal === targetValue) {
                 node.lastVal = `${inputLabel} -> ${result ? 'TRUE' : 'FALSE'} (OK)`;
-                nodeResults[node.id] = result;
-                return;
-            }
-
-            if (lastSent === targetValue) {
-                node.lastVal = `${inputLabel} -> ${result ? 'TRUE' : 'FALSE'} (pending)`;
                 nodeResults[node.id] = result;
                 return;
             }

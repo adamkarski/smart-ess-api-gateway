@@ -29,6 +29,9 @@ export class EnergyManager {
     private static lastUpdate = 0;
 
     static getActiveSoc(): number {
+        // Use latest SOC from DESS flow data first (always fresh from engine tick)
+        if (automationState._latestSoc !== undefined) return automationState._latestSoc;
+
         const nodes = Object.values(automationState.nodes);
 
         const bmsNode = nodes.find(n => n.type === 'bms' && n.data?.soc !== undefined);
@@ -38,6 +41,83 @@ export class EnergyManager {
         if (invNode) return Number(invNode.data.battery_soc);
 
         return 50;
+    }
+
+    /** Read battery discharge cutoff SOC from inverter parameters (e.g. "Low DC Protection SOC In Grid Mode" = 15) */
+    static getDischargeCutoffSoc(): number {
+        const invNode = Object.values(automationState.nodes).find(n => n.type === 'inverter');
+        if (!invNode?.data) return 15;
+        const d = invNode.data as Record<string, any>;
+        const labels: Record<string, string> = d.labels || {};
+
+        let bestVal = 0;
+        let bestPriority = -1;
+
+        for (const [key, label] of Object.entries(labels)) {
+            const lower = (label || key).toLowerCase();
+            const hasSoc = lower.includes('soc');
+            const hasProtection = lower.includes('protection') || lower.includes('low') || lower.includes('cut') || lower.includes('discharge');
+            if (!hasSoc || !hasProtection) continue;
+
+            const val = Number(d[key]);
+            if (isNaN(val) || val <= 0 || val > 100) continue;
+
+            const isGrid = lower.includes('grid') || lower.includes('mains') || lower.includes('on grid');
+            const isOffGrid = lower.includes('off') || lower.includes('off-grid');
+            const priority = isGrid ? 2 : isOffGrid ? 1 : 0;
+
+            if (priority > bestPriority || (priority === bestPriority && val < bestVal)) {
+                bestPriority = priority;
+                bestVal = val;
+            }
+        }
+
+        if (!bestVal) {
+            for (const key of Object.keys(d)) {
+                if (key === 'labels') continue;
+                const lower = key.toLowerCase();
+                if (!lower.includes('soc') && !lower.includes('cutoff') && !lower.includes('cut_off')) continue;
+                const hasDesc = lower.includes('protection') || lower.includes('low') || lower.includes('discharge');
+                if (!hasDesc) continue;
+                const val = Number(d[key]);
+                if (isNaN(val) || val <= 0 || val > 100) continue;
+                if (!bestVal || val < bestVal) bestVal = val;
+            }
+        }
+
+        return bestVal || 15;
+    }
+
+    static getCurrentLoadKw(): number {
+        const invNode = Object.values(automationState.nodes).find(n => n.type === 'inverter');
+        if (!invNode?.data) return 0;
+        const d = invNode.data as Record<string, any>;
+
+        // Priority 1: spDeviceData bc_ params (W) — most reliable device-level measurement
+        const bcW = d.bc_load_active_power !== undefined ? Number(d.bc_load_active_power) : 0;
+        if (bcW > 0) return bcW / 1000;
+
+        // Also try by label "Output Active Power" (W)
+        if (d.labels) {
+            const labels: Record<string, string> = d.labels as Record<string, string>;
+            for (const [key, label] of Object.entries(labels)) {
+                const lower = (label || '').toLowerCase();
+                if (lower.includes('output active power') || lower.includes('load active power')) {
+                    const w = Number(d[key]);
+                    if (w > 0) return w / 1000;
+                }
+            }
+        }
+
+        // Priority 2: flow bc_status load_active_power (kW)
+        const flowKw = d.load_active_power !== undefined ? Number(d.load_active_power) : 0;
+        if (flowKw > 0) return flowKw;
+
+        // Priority 3: formattedData active_power
+        const activePower = d.active_power !== undefined ? Number(d.active_power) : 0;
+        if (activePower > 0) return activePower / 1000;
+
+        return 0;
     }
 
     static getAvgConsumptionKw(): number {
@@ -149,7 +229,9 @@ export class EnergyManager {
         const soc = this.getActiveSoc();
         const batteryKwh = automationState.settings.solar.batteryKwh || 16;
         const currentKwh = (soc / 100) * batteryKwh;
-        const avgKw = this.getAvgConsumptionKw();
+        const currentLoadKw = this.getCurrentLoadKw();
+        const avgHistoricKw = this.getAvgConsumptionKw();
+        const avgKw = currentLoadKw > 0 ? currentLoadKw : avgHistoricKw;
         const solar = this.getSolarForecast();
         const cheapWindow = this.getNextCheapWindow();
 
@@ -157,7 +239,8 @@ export class EnergyManager {
         const chargeCurrentA = automationState.settings.solar?.chargeCurrentA || 40;
         const chargePowerKw = (batteryVoltage * chargeCurrentA) / 1000;
 
-        const minReserveKwh = batteryKwh * 0.2;
+        const minReserveSoc = this.getDischargeCutoffSoc();
+        const minReserveKwh = batteryKwh * (minReserveSoc / 100);
         const usableKwh = Math.max(0, currentKwh - minReserveKwh);
         const hoursLeft = avgKw > 0 ? usableKwh / avgKw : 99;
 
@@ -167,16 +250,16 @@ export class EnergyManager {
         let nextPvHourOffset = -1;
         const maxLookahead = 48;
 
-        // Check current hour too (offset 0)
+        const baseKw = avgHistoricKw > 0 ? avgHistoricKw : avgKw;
         const currentPvKw = this.getPvKwAtOffset(0);
-        if (currentPvKw > avgKw && currentKwh < batteryKwh) {
+        if (currentPvKw > baseKw && currentKwh < batteryKwh) {
             nextPvHourOffset = 0;
         }
 
         if (nextPvHourOffset < 0) {
             for (let i = 1; i <= maxLookahead; i++) {
                 const pvKw = this.getPvKwAtOffset(i);
-                const netKwh = pvKw - avgKw;
+                const netKwh = pvKw - baseKw;
                 projectedKwh += netKwh;
                 projectedKwh = Math.max(0, Math.min(projectedKwh, batteryKwh));
                 if (projectedKwh < minProjectedKwh) minProjectedKwh = projectedKwh;
@@ -188,11 +271,9 @@ export class EnergyManager {
             }
         }
 
-        // --- Energy needed to bridge until next cheap tariff ---
-        const consumptionUntilCheap = avgKw * cheapWindow.hoursUntil;
+        const consumptionUntilCheap = baseKw * cheapWindow.hoursUntil;
         const energyNeededUntilNextCheap = Math.max(0, consumptionUntilCheap - usableKwh);
 
-        // --- Energy needed to bridge until next PV charging ---
         let energyNeededUntilNextPv: number;
         let nextPvWindowInfo: string;
 
@@ -211,12 +292,13 @@ export class EnergyManager {
             if (currentHour >= 18 || currentHour < 6) {
                 hoursUntilPv = currentHour >= 18 ? (24 - currentHour + 6) : (6 - currentHour);
             }
-            energyNeededUntilNextPv = Math.max(0, (avgKw * hoursUntilPv) - usableKwh);
+            energyNeededUntilNextPv = Math.max(0, (baseKw * hoursUntilPv) - usableKwh);
             nextPvWindowInfo = hoursUntilPv > 0 ? `PV ~${hoursUntilPv}h` : 'PV teraz';
         }
 
-        const deficitKwh = Math.max(energyNeededUntilNextCheap, energyNeededUntilNextPv);
-        const targetSoc = Math.min(100, ((usableKwh + deficitKwh) / batteryKwh) * 100 + 20);
+        const minDeficitKwh = soc < 50 ? ((50 - soc) / 100) * batteryKwh : 0;
+        const deficitKwh = Math.max(energyNeededUntilNextCheap, energyNeededUntilNextPv, minDeficitKwh);
+        const targetSoc = Math.min(100, Math.max(50, ((usableKwh + deficitKwh) / batteryKwh) * 100 + 20));
 
         // Charging time at constant charge power
         const requiredChargeMinutes = chargePowerKw > 0
@@ -236,7 +318,7 @@ export class EnergyManager {
         let nextChargeHours: number;
         let nextChargeInfo: string;
 
-        const chargeNeeded = deficitKwh > 0.3 && soc < 85;
+        const chargeNeeded = (deficitKwh > 0.3 && soc < 85) || soc < 35;
 
         if (!chargeNeeded) {
             nextChargeSource = 'BATERIA';
@@ -258,6 +340,10 @@ export class EnergyManager {
             nextChargeSource = 'TAURON';
             nextChargeHours = cheapWindow.hoursUntil;
             nextChargeInfo = formatTimeUntil(cheapWindow.hoursUntil);
+        } else if (soc < 30) {
+            nextChargeSource = 'SIEC';
+            nextChargeHours = 0;
+            nextChargeInfo = 'awaryjnie';
         } else {
             nextChargeSource = 'BRAK';
             nextChargeHours = 99;

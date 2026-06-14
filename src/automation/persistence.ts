@@ -46,6 +46,7 @@ export function loadAutomationState() {
             if (loaded.settings?.tuya) Object.assign(automationState.settings.tuya, loaded.settings.tuya);
             if (loaded.settings?.solar) Object.assign(automationState.settings.solar, loaded.settings.solar);
             if (loaded.settings?.dashboard_widgets) automationState.settings.dashboard_widgets = loaded.settings.dashboard_widgets;
+            if (loaded.settings?.tariff) Object.assign(automationState.settings.tariff, loaded.settings.tariff);
             automationState.links = loaded.links || [];
             automationState.nodes = loaded.nodes || automationState.nodes;
             automationState.tuya_devices = loaded.tuya_devices || {};

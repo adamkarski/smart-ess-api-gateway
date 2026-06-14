@@ -214,7 +214,7 @@
       case 'preset-charge-plan': {
         const pred = d.predictor ?? {}
         const nextSrc = pred.nextChargeSource || '---'
-        const nextEmoji = nextSrc === 'PV' ? '☀️' : nextSrc === 'TAURON' ? '🔌' : '⚪'
+        const nextEmoji = nextSrc === 'PV' ? '☀️' : nextSrc === 'TAURON' || nextSrc === 'SIEC' ? '🔌' : '⚪'
         const deficit = pred.deficitKwh ?? 0
         const chargeMins = pred.requiredChargeMinutes ?? 0
         return {
